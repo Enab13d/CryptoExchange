@@ -1,4 +1,27 @@
+using MassTransit;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProcessDepositCommand>());
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<DepositRequestedEventHandler>();
+
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
+        {
+            h.Username(builder.Configuration["RabbitMQ:Username"]);
+            h.Password(builder.Configuration["RabbitMQ:Password"]);
+        });
+
+        // Configure endpoints here if needed
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 // Add services to the container.
 

@@ -21,4 +21,9 @@
     <PackageReference Include="WorkflowCore.Persistence.MongoDB" Version="3.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharedContracts\SharedContracts.csproj" />
+    <ProjectReference Include="..\SharedContracts\SharedContracts.csproj" />
+  </ItemGroup>
+
 </Project>

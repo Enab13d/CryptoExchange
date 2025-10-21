@@ -1,6 +1,10 @@
-using MongoDB.Driver;
-using WorkflowCore.Interface;
 using MassTransit;
+using MongoDB.Driver;
+using SharedContracts;
+using Workflow.Services;
+using Workflow.Workflows;
+using Workflow.Workflows.Steps;
+using WorkflowCore.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +19,12 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDatabaseName));
 
-builder.Services.AddSingleton<MongoDBInitializer>();
-
 // Configure the HTTP request pipeline.
 builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
+
+builder.Services.AddTransient<IWorkflowService, WorkflowService>();
+builder.Services.AddTransient<IWorkflow<FiatToCryptoMessage>, FiatToCryptoWorkflow>();
+builder.Services.AddTransient<SendToLiqPayProviderStep>();
 
 // Add MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
@@ -44,13 +50,14 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
 
-var dbInitializer = app.Services.GetRequiredService<MongoDBInitializer>();
-await dbInitializer.InitializeAsync();
-
 // Get workflow registry to register your workflows
 var registry = app.Services.GetRequiredService<IWorkflowRegistry>();
 
 // Register your workflow
-//registry.RegisterWorkflow<YourWorkflow>();
+var workflow = app.Services.GetRequiredService<IWorkflow<FiatToCryptoMessage>>();
+registry.RegisterWorkflow(workflow);
+
+var host = app.Services.GetRequiredService<IWorkflowHost>();
+host.Start();
 
 app.Run();

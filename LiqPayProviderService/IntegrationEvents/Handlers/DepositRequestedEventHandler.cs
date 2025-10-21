@@ -1,7 +1,8 @@
 using MassTransit;
 using MediatR;
+using SharedContracts;
 
-public class DepositRequestedEventHandler : IConsumer<DepositRequestedEvent>
+public class DepositRequestedEventHandler : IConsumer<FiatToCryptoMessage>
 {
     private readonly IMediator _mediator;
 
@@ -10,13 +11,12 @@ public class DepositRequestedEventHandler : IConsumer<DepositRequestedEvent>
         _mediator = mediator;
     }
 
-    public async Task Consume(ConsumeContext<DepositRequestedEvent> context)
+    public async Task Consume(ConsumeContext<FiatToCryptoMessage> context)
     {
         var command = new ProcessDepositCommand 
         { 
-            Id = context.Message.Id,
-            Amount = context.Message.Amount
-            // map other fields
+            Id = context.Message.CorrelationId,
+            Amount = 0m // You might want to set this to an appropriate value
         };
 
         await _mediator.Send(command);
