@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/Workflow/Workflow.csproj": {}
+  },
+  "projects": {
+    "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/SharedContracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/SharedContracts.csproj",
+        "projectName": "SharedContracts",
+        "projectPath": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/SharedContracts.csproj",
+        "packagesPath": "/Users/anton.maliutin/.nuget/packages/",
+        "outputPath": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/anton.maliutin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/Workflow/Workflow.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/Workflow/Workflow.csproj",
+        "projectName": "Workflow",
+        "projectPath": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/Workflow/Workflow.csproj",
+        "packagesPath": "/Users/anton.maliutin/.nuget/packages/",
+        "outputPath": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/Workflow/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/anton.maliutin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/SharedContracts.csproj": {
+                "projectPath": "/Users/anton.maliutin/Code/csharp/CryptoExchangeBootcamp/SharedContracts/SharedContracts.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MassTransit": {
+              "target": "Package",
+              "version": "[8.1.2, )"
+            },
+            "MassTransit.RabbitMQ": {
+              "target": "Package",
+              "version": "[8.1.2, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.22.1, )"
+            },
+            "WorkflowCore.Persistence.MongoDB": {
+              "target": "Package",
+              "version": "[3.9.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[8.0.13, 8.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
