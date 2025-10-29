@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SharedContracts;
 using Workflow.Services;
 
@@ -17,13 +16,22 @@ namespace Workflow.Controllers
         }
 
         [HttpPost("{currencyPair}")]
-        public async Task<IActionResult> Exchange(string currencyPair)
+        public async Task<IActionResult> Exchange(string currencyPair, DepositDTO deposit)
         {
             await _workflowService.StartFiatToCryptoWorkflowAsync(new FiatToCryptoMessage
             {
                 Fiat = currencyPair.Split('-')[0],
                 Crypto = currencyPair.Split('-')[1],
-                Amount = 100 // Example amount
+                Amount = deposit.Amount,
+                Currency = deposit.Currency,
+                Description = deposit.Description,
+                Phone = deposit.Phone,
+                Card = deposit.Card,
+                CardExpirationMonth = deposit.CardExpirationMonth,
+                CardExpirationYear = deposit.CardExpirationYear,
+                CardCVV = deposit.CardCVV
+
+
             });
             return Ok($"Exchanging currency pair: {currencyPair}");
         }

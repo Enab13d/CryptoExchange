@@ -1,6 +1,7 @@
 using MassTransit;
 using MongoDB.Driver;
 using SharedContracts;
+using Workflow.IntegrationEvents.Handlers;
 using Workflow.Services;
 using Workflow.Workflows;
 using Workflow.Workflows.Steps;
@@ -29,6 +30,8 @@ builder.Services.AddTransient<SendToLiqPayProviderStep>();
 // Add MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<LiqpayResponseReceivedEventHandler>();
+
     x.SetKebabCaseEndpointNameFormatter();
 
     x.UsingRabbitMq((context, cfg) =>

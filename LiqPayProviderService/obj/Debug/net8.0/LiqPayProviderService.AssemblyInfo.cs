@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LiqPayProviderService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3bc99a80e9241e964df59e58b418a6e561aaa543")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63c032c0052391a852d20b9b768ce41233364a82")]
 [assembly: System.Reflection.AssemblyProductAttribute("LiqPayProviderService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LiqPayProviderService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

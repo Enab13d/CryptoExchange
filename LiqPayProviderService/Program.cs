@@ -1,7 +1,28 @@
+using LiqPayProviderService.Commands;
+using LiqPayProviderService.Domain;
+using LiqPayProviderService.Infrastructure.Clients.LiqpayClient;
+using LiqPayProviderService.Infrastructure.Configuration;
+using LiqPayProviderService.Infrastructure.Context;
+using LiqPayProviderService.Infrastructure.Repositories;
+using LiqPayProviderService.IntegrationEvents.Handlers;
+using LiqPayProviderService.Services;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.Configure<LiqPayClientOptions>(builder.Configuration.GetSection(nameof(LiqPayClientOptions)));
+string? mongoConnectionString = builder.Configuration.GetConnectionString("MongoConnection" ?? throw new InvalidOperationException("mongoConnectionString missing"));
+string? mongoDatabaseName = builder.Configuration["MongoDatabaseName"] ?? throw new InvalidOperationException("MongoDatabaseName missing");
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectionString));
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<ILiqpayService, LiqPayService>();
+builder.Services.AddScoped<IWebhookService, WebhookService>();
+builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    options.UseMongoDB(client, mongoDatabaseName);
+});
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProcessDepositCommand>());
 
 builder.Services.AddMassTransit(x =>
@@ -24,6 +45,12 @@ builder.Services.AddMassTransit(x =>
 });
 
 // Add services to the container.
+// implement the following
+builder.Services.AddHttpClient<ILiqpayClient, LiqpayClient>(client =>
+{
+    client.BaseAddress = new Uri("https://www.liqpay.ua/api/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,7 +63,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    });
 }
 
 app.UseHttpsRedirection();

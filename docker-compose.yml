@@ -22,21 +22,31 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5004
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+          condition: service_healthy
+      rabbitmq:
+          condition: service_healthy
 
   liqpayproviderservice:
-    image: ${DOCKER_REGISTRY-}  
+    image: ${DOCKER_REGISTRY-}liqpayproviderservice
     build:
       context: .
       dockerfile: LiqPayProviderService/Dockerfile
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+          condition: service_healthy
+      rabbitmq:
+          condition: service_healthy
+        
+    env_file:
+      - .env
     environment:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - ConnectionStrings__MongoConnection=mongodb://mongo:27017
+      - MongoDatabaseName=workflowdb
+      - Webhook__URL=https://aqueous-worrisome-lasandra.ngrok-free.dev
 
   mongo:
     image: mongo:6.0
