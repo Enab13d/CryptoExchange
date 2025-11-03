@@ -2,9 +2,9 @@ using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
 using SharedContracts;
 
-namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Mappers;
+namespace LiqPayProviderService.Api.Extensions;
 
-public static class DTOToLiqpayRequest
+public static class ToLiqpayRequest
 {
     public static CardPaymentRequest ToCardPaymentRequest(this DepositDTO dto)
     {

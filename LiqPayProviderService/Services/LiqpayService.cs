@@ -1,5 +1,5 @@
+using LiqPayProviderService.Api.Extensions;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Mappers;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using SharedContracts;

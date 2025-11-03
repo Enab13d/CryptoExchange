@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Extensions;
+using LiqPayProviderService.Api.Extensions;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using LiqPayProviderService.Infrastructure.Configuration;

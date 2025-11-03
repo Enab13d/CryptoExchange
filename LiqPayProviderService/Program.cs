@@ -8,6 +8,7 @@ using LiqPayProviderService.IntegrationEvents.Handlers;
 using LiqPayProviderService.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +56,18 @@ builder.Services.AddHttpClient<ILiqpayClient, LiqpayClient>(client =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(name: "v1", new OpenApiInfo
+    {
+        Title = "Liqpay payment provider",
+        Version = "v1",
+        Description = "Processing payment requests"
+    });
+
+}
+
+);
 
 var app = builder.Build();
 

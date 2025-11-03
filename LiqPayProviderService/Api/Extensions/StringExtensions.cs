@@ -1,8 +1,7 @@
-using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Extensions;
+namespace LiqPayProviderService.Api.Extensions;
 
 public static class StringExtensions
 {
