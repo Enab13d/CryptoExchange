@@ -1,11 +1,10 @@
-using LiqPayProviderService.Domain.SeedWork;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace LiqPayProviderService.Domain.Entities;
 
-public class Payment : IAggregateRoot
+public class Payment
 {
     public ObjectId Id { get; set; }
     public Guid OrderId { get; init; }

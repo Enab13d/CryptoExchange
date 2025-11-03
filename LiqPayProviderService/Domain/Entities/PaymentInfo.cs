@@ -1,4 +1,3 @@
-using LiqPayProviderService.Domain.SeedWork;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using MongoDB.Bson;
 using Newtonsoft.Json;
@@ -7,7 +6,7 @@ using Newtonsoft.Json.Converters;
 namespace LiqPayProviderService.Domain.Entities;
 
 
-public class PaymentInfo : IAggregateRoot
+public class PaymentInfo
 {
     //has the shape of liqpay callback response data
 
