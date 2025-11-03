@@ -13,11 +13,12 @@ namespace LiqPayProviderService.Api.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webhookService, IPaymentRepository paymentRepository) : ControllerBase
+public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webhookService, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork) : ControllerBase
 {
     private readonly ILiqpayClient _liqpayClient = liqpayClient;
 
     private readonly IPaymentRepository _paymentRepository = paymentRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IWebhookService _webhookService = webhookService;
     [HttpPost("callback")]
     public async Task<IActionResult> HandleLiqpayCallback(CancellationToken cancellationToken)
@@ -39,7 +40,7 @@ public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webho
         ArgumentNullException.ThrowIfNull(paymentInfo.OrderId);
         Guid correlationId = Guid.Parse(paymentInfo.OrderId);
         _paymentRepository.UpdateById(correlationId, PaymentStatus.Success);
-        await _paymentRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _webhookService.Publish(correlationId, cancellationToken);
         return Ok("Callback processed successfully");
     }

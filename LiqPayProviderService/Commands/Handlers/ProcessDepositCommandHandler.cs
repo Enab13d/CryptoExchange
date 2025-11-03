@@ -12,19 +12,25 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
 {
 
     private readonly IPaymentRepository _paymentRepository;
+
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILiqpayService _liqpayService;
     private readonly ILogger<ProcessDepositCommandHandler> _logger;
 
     public ProcessDepositCommandHandler
     (ILogger<ProcessDepositCommandHandler> logger,
       IPaymentRepository paymentRepository,
-      ILiqpayService liqpayService)
+      ILiqpayService liqpayService,
+      IUnitOfWork unitOfWork
+
+      )
     {
         _logger = logger;
         // Inject IRepository interface +
         _paymentRepository = paymentRepository;
         // inject http handler +
         _liqpayService = liqpayService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<bool> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
@@ -39,8 +45,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Crypto = command.Crypto,
             Status = PaymentStatus.Processing
 
-        });
-        await _paymentRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         DepositDTO deposit = new()
         {
             CorrelationId = command.CorrelationId,

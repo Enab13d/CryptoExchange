@@ -15,26 +15,21 @@ namespace LiqPayProviderService.Infrastructure.Repositories;
 
 public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
 {
-
     private readonly PaymentDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
-    public IUnitOfWork UnitOfWork { get => _context; }
-
-    public Payment Add(Payment payment)
+    public async Task<List<Payment>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _context.Payments.Add(payment).Entity;
+        return await _context.Payments.ToListAsync(cancellationToken);
     }
 
-    public async Task<List<Payment>> FindAllAsync()
-    {
-        return await _context.Payments.ToListAsync();
-    }
-
-    public Payment? FindByIdAsync(ObjectId id)
+    public Payment? GetById(ObjectId id, CancellationToken cancellationToken = default)
     {
         return _context.Payments.FirstOrDefault(e => e.Id == id);
     }
-
+    public Payment Add(Payment entity, CancellationToken cancellationToken = default)
+    {
+        return _context.Payments.Add(entity).Entity;
+    }
     public void Update(Payment payment)
     {
         Payment? existing = _context.Payments.FirstOrDefault(e => e.CorrelationId == payment.CorrelationId);
@@ -50,4 +45,11 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
 
         existing.Status = paymentStatus;
     }
+
+    public void Remove(Payment entity)
+    {
+        _context.Payments.Remove(entity);
+    }
+
+
 }

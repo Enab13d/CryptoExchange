@@ -17,6 +17,7 @@ string? mongoConnectionString = builder.Configuration.GetConnectionString("Mongo
 string? mongoDatabaseName = builder.Configuration["MongoDatabaseName"] ?? throw new InvalidOperationException("MongoDatabaseName missing");
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectionString));
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILiqpayService, LiqPayService>();
 builder.Services.AddScoped<IWebhookService, WebhookService>();
 builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
