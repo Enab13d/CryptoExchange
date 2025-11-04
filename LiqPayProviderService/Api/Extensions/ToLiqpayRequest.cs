@@ -17,10 +17,6 @@ public static class ToLiqpayRequest
             Description = dto.Description,
             OrderId = dto.OrderId,
             Phone = dto.Phone,
-            Card = dto.Card,
-            CardExpirationMonth = dto.CardExpirationMonth,
-            CardExpirationYear = dto.CardExpirationYear,
-            CardCVV = dto.CardCVV,
             Action = OperationType.Pay
             // Fields not in DTO are left default (Version, PublicKey, etc.)
         };

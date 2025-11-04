@@ -20,6 +20,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILiqpayService, LiqPayService>();
 builder.Services.AddScoped<IWebhookService, WebhookService>();
+builder.Services.AddScoped<ILiqpayClient, LiqpayClient>();
 builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
 {
     var client = sp.GetRequiredService<IMongoClient>();
@@ -46,13 +47,6 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-// Add services to the container.
-// implement the following
-builder.Services.AddHttpClient<ILiqpayClient, LiqpayClient>(client =>
-{
-    client.BaseAddress = new Uri("https://www.liqpay.ua/api/");
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

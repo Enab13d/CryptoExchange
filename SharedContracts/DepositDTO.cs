@@ -9,8 +9,8 @@ public record DepositDTO()
     public required string Description { get; init; }
     public string OrderId { get; init; } = string.Empty;
     public required string Phone { get; init; }
-    public required string Card { get; init; }
-    public required string CardExpirationMonth { get; init; }
-    public required string CardExpirationYear { get; init; }
-    public required string CardCVV { get; init; }
+    // public required string Card { get; init; }
+    // public required string CardExpirationMonth { get; init; }
+    // public required string CardExpirationYear { get; init; }
+    // public required string CardCVV { get; init; }
 }

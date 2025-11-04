@@ -7,5 +7,5 @@ namespace LiqPayProviderService.Services;
 
 public interface ILiqpayService
 {
-    Task<CardPaymentResponse> Deposit(DepositDTO deposit);
+    PaymentDataDTO PreparePaymentData(DepositDTO deposit);
 }

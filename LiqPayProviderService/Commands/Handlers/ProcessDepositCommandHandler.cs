@@ -8,7 +8,7 @@ using SharedContracts;
 
 namespace LiqPayProviderService.Commands.Handlers;
 
-public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositCommand, bool>
+public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositCommand, PaymentDataDTO>
 {
 
     private readonly IPaymentRepository _paymentRepository;
@@ -33,7 +33,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
+    public async Task<PaymentDataDTO> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
     {
         //save object with correlation ID to db with repository pattern 
         _paymentRepository.Add(new Payment()
@@ -55,23 +55,19 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Description = command.Description,
             OrderId = command.OrderId.ToString(),
             Phone = command.Phone,
-            Card = command.Card,
-            CardExpirationMonth = command.CardExpirationMonth,
-            CardExpirationYear = command.CardExpirationYear,
-            CardCVV = command.CardCVV
         };
 
         // invoke httpClient 
-        CardPaymentResponse response = await _liqpayService.Deposit(deposit);
+        PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
 
 
         // invoke deposit command
 
 
         // Process deposit logic here
-        _logger.LogInformation("Processing deposit for Command Id: {CommandId} with Amount: {Amount}. CORRELATION ID {CorrelationId}", command.Id, command.Amount, command.CorrelationId);
+        _logger.LogInformation("Prepared LiqPay checkout data for CorrelationId: {CorrelationId}", command.CorrelationId);
 
 
-        return true;
+        return paymentData;
     }
 }

@@ -2,10 +2,11 @@ using System.Security.Cryptography;
 using System.Text;
 using LiqPayProviderService.Api.Extensions;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using LiqPayProviderService.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SharedContracts;
 
 namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient;
 
@@ -14,27 +15,21 @@ public class LiqpayClient : ILiqpayClient
     private readonly string _publicKey;
     private readonly string _privateKey;
     private readonly int _apiVersion;
-    private readonly HttpClient _httpClient;
     private readonly JsonSerializerSettings _jsonSettings;
 
     private readonly ILogger<LiqpayClient> _logger;
     public bool IsCnbSandbox
     { get; set; }
 
-    public LiqpayClient(IConfiguration configuration, HttpClient httpClient, ILogger<LiqpayClient> logger)
+    public LiqpayClient(IOptions<LiqPayClientOptions> options, ILogger<LiqpayClient> logger)
     {
-        LiqPayClientOptions options = configuration
-        .GetSection(nameof(LiqPayClientOptions))
-        .Get<LiqPayClientOptions>() ?? throw new ArgumentNullException(nameof(configuration));
-
-        _publicKey = options.PublicKey;
-        _privateKey = options.PrivateKey;
-        _apiVersion = options.LiqPayAPIVersion;
+        _publicKey = options.Value.PublicKey;
+        _privateKey = options.Value.PrivateKey;
+        _apiVersion = options.Value.LiqPayAPIVersion;
         _jsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore
         };
-        _httpClient = httpClient;
         _logger = logger;
 
         CheckConstructionPrerequisites();
@@ -57,20 +52,18 @@ public class LiqpayClient : ILiqpayClient
         var json = JObject.FromObject(requestParams, new JsonSerializer { NullValueHandling = _jsonSettings.NullValueHandling });
         return json.ToString();
     }
-    private Dictionary<string, string> PrepareRequestData<T>(T requestParams) where T : ILiqpayBasicApiParams
+    public PaymentDataDTO PreparePaymentData<T>(T requestParams) where T : ILiqpayBasicApiParams
     {
         var requestWithBaseApiParams = AttachBaseApiParams(requestParams);
         var requestWithSandboxParam = AttachSandboxParam(requestWithBaseApiParams);
         string json = SerializeToJson(requestWithSandboxParam);
-        _logger.LogInformation("{json}", json);
         string data = json.ToBase64();
-        _logger.LogInformation("{data}", data);
-        Dictionary<string, string> apiData = new()
+        return new PaymentDataDTO
         {
-            { "data", data },
-            { "signature", CreateSignature(data)}
+            Data = data,
+            Signature = CreateSignature(data)
+
         };
-        return apiData;
     }
     private static string StrToSign(string str)
     {
@@ -102,28 +95,4 @@ public class LiqpayClient : ILiqpayClient
         }
     }
 
-    public async Task<CardPaymentResponse> PayWithCardAsync(string path, CardPaymentRequest requestParams)
-    {
-        Dictionary<string, string> data = PrepareRequestData(requestParams);
-        _logger.LogInformation("Private key: {PrivateKey}, public key: {PublicKey}", _privateKey, _publicKey);
-        _logger.LogInformation("Signature: ${signature}", data["signature"]);
-        using var content = new FormUrlEncodedContent(data);
-
-        string relativePath = path?.TrimStart('/') ?? string.Empty;
-        var fullUrl = new Uri(_httpClient.BaseAddress!, relativePath);
-        _logger.LogInformation("Sending LiqPay request to URL: {Url}", fullUrl);
-        var response = await _httpClient.PostAsync(path, content);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError("LiqPay request to {Url} failed: {Status} - {Body}", fullUrl, response.StatusCode, body);
-            response.EnsureSuccessStatusCode();
-        }
-
-        _logger.LogInformation("LiqPay request to {Url} sucess: {Status} - {Body}", fullUrl, response.StatusCode, body);
-        response.EnsureSuccessStatusCode();
-        string? json = await response.Content.ReadAsStringAsync() ?? throw new InvalidOperationException("response is null");
-        return JsonConvert.DeserializeObject<CardPaymentResponse>(json)!;
-
-    }
 }

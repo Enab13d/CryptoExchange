@@ -8,15 +8,17 @@ using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using LiqPayProviderService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SharedContracts;
 
 namespace LiqPayProviderService.Api.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webhookService, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork) : ControllerBase
+public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webhookService, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, ILiqpayService liqpayService) : ControllerBase
 {
     private readonly ILiqpayClient _liqpayClient = liqpayClient;
 
+    private readonly ILiqpayService _liqpayService = liqpayService;
     private readonly IPaymentRepository _paymentRepository = paymentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IWebhookService _webhookService = webhookService;
@@ -43,5 +45,11 @@ public class PaymentController(ILiqpayClient liqpayClient, IWebhookService webho
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _webhookService.Publish(correlationId, cancellationToken);
         return Ok("Callback processed successfully");
+    }
+    [HttpPost("deposit")]
+    public async Task<IActionResult> HandleDeposit(DepositDTO deposit, CancellationToken cancellationToken)
+    {
+        PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
+        return Ok(paymentData);
     }
 }

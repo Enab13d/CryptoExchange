@@ -10,10 +10,6 @@
         public string Description { get; init; } = string.Empty;
         public Guid OrderId { get; set; }
         public string Phone { get; init; } = string.Empty;
-        public string Card { get; init; } = string.Empty;
-        public string CardExpirationMonth { get; init; } = string.Empty;
-        public string CardExpirationYear { get; init; } = string.Empty;
-        public string CardCVV { get; init; } = string.Empty;
         public FiatToCryptoResponseMessage Response { get; set; } = default!;
     }
 }

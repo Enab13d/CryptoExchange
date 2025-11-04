@@ -26,12 +26,6 @@ namespace Workflow.Controllers
                 Currency = deposit.Currency,
                 Description = deposit.Description,
                 Phone = deposit.Phone,
-                Card = deposit.Card,
-                CardExpirationMonth = deposit.CardExpirationMonth,
-                CardExpirationYear = deposit.CardExpirationYear,
-                CardCVV = deposit.CardCVV
-
-
             });
             return Ok($"Exchanging currency pair: {currencyPair}");
         }
