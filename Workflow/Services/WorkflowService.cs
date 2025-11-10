@@ -14,9 +14,7 @@ namespace Workflow.Services
 
         public async Task StartFiatToCryptoWorkflowAsync(FiatToCryptoMessage payload)
         {
-            Guid correlationId = Guid.NewGuid();
-            payload.CorrelationId = correlationId;
-            payload.OrderId = correlationId;
+
             await _workflowHost.StartWorkflow("FiatToCryptoWorkflow", 1, payload);
         }
     }

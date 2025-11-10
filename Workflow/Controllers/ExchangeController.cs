@@ -32,6 +32,7 @@ namespace Workflow.Controllers
             }
 
             Guid paymentId = Guid.NewGuid();
+            Guid correlationId = Guid.NewGuid();
             await _workflowService.StartFiatToCryptoWorkflowAsync(new FiatToCryptoMessage
             {
                 Fiat = deposit.Currency,
@@ -42,7 +43,9 @@ namespace Workflow.Controllers
                 Phone = deposit.Phone,
                 CreatedAt = DateTime.Now,
                 PaymentId = Guid.NewGuid(),
-                CorrelationId = Guid.NewGuid()
+                CorrelationId = correlationId,
+                OrderId = correlationId
+
 
 
             });

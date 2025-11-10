@@ -3,8 +3,9 @@
     public class FiatToCryptoResponseMessage
     {
         public Guid CorrelationId { get; set; }
-        public string Status { get; set; } = default!;
-        public string? CreateDate { get; set; }
-        public string? UpdateDate { get; set; }
+        public DepositStatus Status { get; set; }
+        public DateTime? CreateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
+
     }
 }

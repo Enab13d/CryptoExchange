@@ -1,7 +1,6 @@
 using LiqPayProviderService.Domain;
 using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using LiqPayProviderService.Services;
 using MediatR;
 using SharedContracts;
@@ -36,6 +35,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
     public async Task<PaymentDataDTO> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
     {
         //save object with correlation ID to db with repository pattern 
+        DateTime timestamp = DateTime.Now;
         _paymentRepository.Add(new Payment()
         {
             OrderId = command.OrderId,
@@ -43,7 +43,9 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Amount = command.Amount,
             Fiat = command.Fiat,
             Crypto = command.Crypto,
-            Status = PaymentStatus.Processing
+            Status = PaymentStatus.Processing,
+            CreatedAt = timestamp,
+            UpdatedAt = timestamp
 
         }, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -55,6 +57,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Description = command.Description,
             OrderId = command.OrderId.ToString(),
             Phone = command.Phone,
+            Crypto = command.Crypto
         };
 
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);

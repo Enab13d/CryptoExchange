@@ -16,4 +16,7 @@ public class Payment
     [BsonRepresentation(BsonType.String)]
     public PaymentStatus Status { get; set; }
 
+    public DateTime UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; init; }
+
 }

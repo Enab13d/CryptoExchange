@@ -36,6 +36,7 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
         if (existing is null) return;
 
         existing.Status = payment.Status;
+        existing.UpdatedAt = DateTime.Now;
     }
 
     public void UpdateById(Guid correlationId, PaymentStatus paymentStatus)
@@ -44,6 +45,7 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
         if (existing is null) return;
 
         existing.Status = paymentStatus;
+        existing.UpdatedAt = DateTime.Now;
     }
 
     public void Remove(Payment entity)
