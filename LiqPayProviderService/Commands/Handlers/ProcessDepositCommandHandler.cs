@@ -44,6 +44,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
         {
             OrderId = command.OrderId,
             CorrelationId = command.CorrelationId,
+            PaymentId = command.PaymentId,
             Amount = command.Amount,
             Fiat = command.Fiat,
             Crypto = command.Crypto,
@@ -61,7 +62,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Description = command.Description,
             OrderId = command.OrderId.ToString(),
             Phone = command.Phone,
-            Crypto = command.Crypto
+            Crypto = command.Crypto,
+            PaymentId = command.PaymentId
         };
 
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);

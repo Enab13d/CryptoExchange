@@ -4,6 +4,8 @@ namespace SharedContracts;
 public record DepositDTO()
 {
     public Guid CorrelationId { get; init; }
+
+    public Guid PaymentId { get; init; }
     public required decimal Amount { get; init; }
     public required string Currency { get; init; }
 

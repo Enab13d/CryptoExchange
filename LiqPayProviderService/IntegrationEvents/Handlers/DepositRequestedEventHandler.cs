@@ -11,16 +11,18 @@ public class DepositRequestedEventHandler(IMediator mediator) : IConsumer<FiatTo
 
     public async Task Consume(ConsumeContext<FiatToCryptoMessage> context)
     {
+        FiatToCryptoMessage msg = context.Message;
         var command = new ProcessDepositCommand
         {
-            Id = context.Message.CorrelationId,
-            CorrelationId = context.Message.CorrelationId,
-            Amount = context.Message.Amount,
-            Fiat = context.Message.Currency,
-            Crypto = context.Message.Crypto,
-            Description = context.Message.Description,
-            OrderId = context.Message.OrderId,
-            Phone = context.Message.Phone,
+            Id = msg.CorrelationId,
+            CorrelationId = msg.CorrelationId,
+            PaymentId = msg.PaymentId,
+            Amount = msg.Amount,
+            Fiat = msg.Currency,
+            Crypto = msg.Crypto,
+            Description = msg.Description,
+            OrderId = msg.OrderId,
+            Phone = msg.Phone,
 
         };
 
