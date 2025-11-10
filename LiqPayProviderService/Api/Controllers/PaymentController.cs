@@ -2,9 +2,9 @@
 
 using System.Text;
 using LiqPayProviderService.Domain;
+using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using LiqPayProviderService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

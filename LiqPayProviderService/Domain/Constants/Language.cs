@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
+namespace LiqPayProviderService.Domain.Constants;
 
 public enum Language
 {

@@ -4,8 +4,8 @@
 // example
 // https://github.com/dotnet-architecture/eShopOnContainersAI/blob/dev/src/Services/Ordering/Ordering.Infrastructure/Repositories/BuyerRepository.cs
 using LiqPayProviderService.Domain;
+using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using LiqPayProviderService.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;

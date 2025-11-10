@@ -1,6 +1,6 @@
 namespace LiqPayProviderService.Infrastructure.Configuration;
 
-public class LiqPayClientOptions
+public class LiqPayOptions
 {
     public string PublicKey { get; set; } = string.Empty;
 

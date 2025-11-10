@@ -1,6 +1,6 @@
 using LiqPayProviderService.Domain;
+using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using LiqPayProviderService.Services;
 using MediatR;

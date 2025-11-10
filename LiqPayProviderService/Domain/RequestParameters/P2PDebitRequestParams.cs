@@ -1,8 +1,8 @@
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
+using LiqPayProviderService.Domain.Constants;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
+namespace LiqPayProviderService.Domain.RequestParameters;
 
 public class P2PDebitRequestParams : ILiqpayBasicApiParams
 {

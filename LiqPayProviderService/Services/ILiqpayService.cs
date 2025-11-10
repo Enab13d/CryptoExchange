@@ -1,5 +1,3 @@
-
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Responses;
 using SharedContracts;
 
 namespace LiqPayProviderService.Services;

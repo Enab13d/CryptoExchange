@@ -1,4 +1,4 @@
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
+using LiqPayProviderService.Domain.Constants;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

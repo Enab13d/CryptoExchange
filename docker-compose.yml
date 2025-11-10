@@ -46,7 +46,7 @@ services:
       - RabbitMQ__Password=guest
       - ConnectionStrings__MongoConnection=mongodb://mongo:27017
       - MongoDatabaseName=workflowdb
-      - Webhook__URL=https://aqueous-worrisome-lasandra.ngrok-free.dev
+      - WebhookOptions__URL=https://aqueous-worrisome-lasandra.ngrok-free.dev
 
   mongo:
     image: mongo:6.0

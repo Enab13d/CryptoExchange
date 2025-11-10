@@ -1,7 +1,6 @@
-
 using Newtonsoft.Json;
 
-namespace LiqPayProviderService.Infrastructure.Clients.LiqpayClient.RequestParameters;
+namespace LiqPayProviderService.Domain.RequestParameters;
 
 
 public class ILiqpayBasicApiParams

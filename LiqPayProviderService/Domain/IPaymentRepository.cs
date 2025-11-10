@@ -2,9 +2,9 @@
 // example
 //https://github.com/dotnet-architecture/eShopOnContainersAI/tree/dev/src/Services/Ordering/Ordering.Infrastructure
 
+using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Domain.SeedWork;
-using LiqPayProviderService.Infrastructure.Clients.LiqpayClient.Constants;
 
 namespace LiqPayProviderService.Domain;
 
