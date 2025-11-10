@@ -12,6 +12,7 @@
         public Guid PaymentId { get; init; }
         public string Phone { get; init; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public PaymentDataDTO PaymentData { get; set; } = default!;
         public FiatToCryptoResponseMessage Response { get; set; } = default!;
     }
 }

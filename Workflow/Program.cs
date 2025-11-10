@@ -26,11 +26,13 @@ builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
 builder.Services.AddTransient<IWorkflowService, WorkflowService>();
 builder.Services.AddTransient<IWorkflow<FiatToCryptoMessage>, FiatToCryptoWorkflow>();
 builder.Services.AddTransient<SendToLiqPayProviderStep>();
+builder.Services.AddTransient<SendToSignalRProviderStep>();
 
 // Add MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<LiqpayResponseReceivedEventHandler>();
+    x.AddConsumer<FormDataReceivedEventHandler>();
 
     x.SetKebabCaseEndpointNameFormatter();
 

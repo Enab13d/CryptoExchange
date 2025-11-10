@@ -12,6 +12,7 @@ using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<LiqPayOptions>(builder.Configuration.GetSection(nameof(LiqPayOptions)));
+builder.Services.Configure<WebhookOptions>(builder.Configuration.GetSection(nameof(WebhookOptions)));
 string? mongoConnectionString = builder.Configuration.GetConnectionString("MongoConnection" ?? throw new InvalidOperationException("mongoConnectionString missing"));
 string? mongoDatabaseName = builder.Configuration["MongoDatabaseName"] ?? throw new InvalidOperationException("MongoDatabaseName missing");
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectionString));
