@@ -57,11 +57,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Phone = command.Phone,
         };
 
-        // invoke httpClient 
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
-
-
-        // invoke deposit command
+        // publish payment data to workflow
 
 
         // Process deposit logic here

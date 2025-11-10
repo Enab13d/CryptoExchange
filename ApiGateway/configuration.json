@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/exchange/{currencyPair}",
+      "DownstreamPathTemplate": "/api/exchange",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -9,7 +9,7 @@
           "Port": 5004
         }
       ],
-      "UpstreamPathTemplate": "/exchange/{currencyPair}",
+      "UpstreamPathTemplate": "/exchange",
       "UpstreamHttpMethod": ["POST"],
       "RouteIsCaseSensitive": false
     },

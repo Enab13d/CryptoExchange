@@ -9,7 +9,9 @@
         public string Currency { get; init; } = string.Empty;
         public string Description { get; init; } = string.Empty;
         public Guid OrderId { get; set; }
+        public Guid PaymentId { get; init; }
         public string Phone { get; init; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
         public FiatToCryptoResponseMessage Response { get; set; } = default!;
     }
 }
