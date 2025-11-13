@@ -1,6 +1,7 @@
 ﻿using SharedContracts;
 using Workflow.Workflows.Steps;
 using WorkflowCore.Interface;
+using WorkflowCore.Models;
 
 namespace Workflow.Workflows
 {
@@ -19,9 +20,10 @@ namespace Workflow.Workflows
                 // Then implement step to send form data to SignalR
                 .WaitFor("form-data-prepared", data => data.CorrelationId.ToString())
                 .Output(data => data.PaymentData, step => (PaymentDataDTO)step.EventData)
-
+                .WaitFor("websocket-connection-established", data => data.PaymentId.ToString())
+                .Output(data => data.WebsocketConnectionMessage, step => (WebsocketConnectionMessage)step.EventData)
                 .Then<SendToSignalRProviderStep>()
-                    .Input(step => step.Payload, data => data.PaymentData)
+                    .Input(step => step.Input, data => data)
 
                 .WaitFor("liqpay-response", data => data.CorrelationId.ToString())
                     .Name("WaitForLiqPayResponse")

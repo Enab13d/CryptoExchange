@@ -11,6 +11,7 @@ services:
     depends_on:
       - workflow
       - liqpayproviderservice
+      - signalrproviderservice
 
   workflow:
     image: ${DOCKER_REGISTRY-}workflow
@@ -26,7 +27,25 @@ services:
           condition: service_healthy
       rabbitmq:
           condition: service_healthy
-
+  signalrproviderservice:
+    image: ${DOCKER_REGISTRY-}signalrproviderservice
+    build:
+      context: .
+      dockerfile: SignalRProviderService/Dockerfile
+    ports:
+      - "5007:5007"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+        
+    environment:
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - ASPNETCORE_URLS=http://0.0.0.0:5007
+      
   liqpayproviderservice:
     image: ${DOCKER_REGISTRY-}liqpayproviderservice
     build:

@@ -1,28 +1,28 @@
 
 using MassTransit;
 using SignalRProviderService.Api.Hubs;
+using SignalRProviderService.Commands;
 using SignalRProviderService.IntegrationEvents.Handlers;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
 
-
 services.AddOpenApi();
 services.AddSignalR();
+services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<JoinHubGroupCommand>());
 services.AddMassTransit(busRegistrationConfigurator =>
 {
-    busRegistrationConfigurator.AddConsumer<PaymentDataPreparedEventHandler>();
+    busRegistrationConfigurator.AddConsumer<PaymentDataRequestedEventHandler>();
     busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
     busRegistrationConfigurator.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
          {
-             h.Username(builder.Configuration["RabbitMQ:Username"]);
-             h.Password(builder.Configuration["RabbitMQ:Password"]);
+             h.Username(builder.Configuration["RabbitMQ:Username"] ?? throw new ArgumentException(""));
+             h.Password(builder.Configuration["RabbitMQ:Password"] ?? throw new ArgumentException(""));
          });
 
-        // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });
 }
@@ -37,7 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapHub<PaymentHub>("/payment-data");
+app.MapHub<PaymentHub>("api/hub/payment");
 
 app.Run();
 

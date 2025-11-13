@@ -22,9 +22,21 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/api/payment/callback",
+      "UpstreamPathTemplate": "/payment/callback",
       "UpstreamHttpMethod": ["POST"],
       "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/hub/{route}",
+      "UpstreamPathTemplate": "/hub/{route}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "signalrproviderservice",
+          "Port": 5007
+        }
+      ],
+      "UpstreamHttpMethod": ["OPTIONS", "POST", "GET"]
     }
   ],
   "GlobalConfiguration": {

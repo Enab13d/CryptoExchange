@@ -108,7 +108,7 @@ public class LiqPayService : ILiqpayService
         CardPaymentRequest request = deposit.ToCardPaymentRequest();
 
         //assign webhook url
-        request.ServerUrl = $"{_webhookURL}/api/payment/callback";
+        request.ServerUrl = $"{_webhookURL}/payment/callback";
         PaymentDataDTO data = PreparePaymentFormData(request);
         return data;
     }

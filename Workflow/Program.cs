@@ -33,6 +33,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<LiqpayResponseReceivedEventHandler>();
     x.AddConsumer<FormDataReceivedEventHandler>();
+    x.AddConsumer<WebsocketConnectionEstablishedEventHandler>();
 
     x.SetKebabCaseEndpointNameFormatter();
 

@@ -1,7 +1,7 @@
 namespace SharedContracts;
 
 
-public record PaymentDataDTO()
+public record PreparedFormDataMessage()
 {
     public Guid CorrelationId { get; set; }
     public Guid PaymentId { get; set; }

@@ -68,6 +68,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
 
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
         paymentData.CorrelationId = command.CorrelationId;
+        paymentData.PaymentId = command.PaymentId;
         // publish payment data to workflow
         await _publishEndpoint.Publish(paymentData, cancellationToken);
 

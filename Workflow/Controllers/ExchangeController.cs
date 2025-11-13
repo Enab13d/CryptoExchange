@@ -42,7 +42,7 @@ namespace Workflow.Controllers
                 Description = deposit.Description,
                 Phone = deposit.Phone,
                 CreatedAt = DateTime.Now,
-                PaymentId = Guid.NewGuid(),
+                PaymentId = paymentId,
                 CorrelationId = correlationId,
                 OrderId = correlationId
 
@@ -51,7 +51,7 @@ namespace Workflow.Controllers
             });
             var response = new
             {
-                PaymentId = paymentId,
+                PaymentId = paymentId.ToString(),
                 Status = "pending"
             };
             return Ok(response);
