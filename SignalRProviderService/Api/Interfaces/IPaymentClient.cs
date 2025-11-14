@@ -5,6 +5,5 @@ namespace SignalRProviderService.Api.Interfaces;
 
 public interface IPaymentClient
 {
-    Task ReceivePaymentDataMessage(PaymentDataDTO paymentData);
-    Task ReceiveConnectionMessage(string connectionId);
+    Task ReceivePaymentFormData(PreparedFormDataMessage paymentData);
 }

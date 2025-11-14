@@ -3,14 +3,15 @@ using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using SharedContracts;
 using SignalRProviderService.Api.Hubs;
+using SignalRProviderService.Api.Interfaces;
 
 namespace SignalRProviderService.IntegrationEvents.Handlers;
 
 
-public class PaymentDataRequestedEventHandler(IHubContext<PaymentHub> hubContext, ILogger<PaymentDataRequestedEventHandler> logger) : IConsumer<PreparedFormDataMessage>
+public class PaymentDataPreparedEventHandler(IHubContext<PaymentHub, IPaymentClient> hubContext, ILogger<PaymentDataPreparedEventHandler> logger) : IConsumer<PreparedFormDataMessage>
 {
-    private readonly IHubContext<PaymentHub> _hubContext = hubContext;
-    private readonly ILogger<PaymentDataRequestedEventHandler> _logger = logger;
+    private readonly IHubContext<PaymentHub, IPaymentClient> _hubContext = hubContext;
+    private readonly ILogger<PaymentDataPreparedEventHandler> _logger = logger;
     public async Task Consume(ConsumeContext<PreparedFormDataMessage> context)
     {
         PreparedFormDataMessage paymentData = context.Message;
@@ -19,9 +20,9 @@ public class PaymentDataRequestedEventHandler(IHubContext<PaymentHub> hubContext
         //message contain the method name "ReceivePaymentFormData" that should be invoked on the client
         //and arguments (paymentData) that client should pass into those method
         await _hubContext.Clients.Group(paymentData.PaymentId.ToString())
-        .SendAsync("ReceivePaymentFormData", paymentData);
+        .ReceivePaymentFormData(paymentData);
 
-        _logger.LogInformation("Sent payment data to client with PaymentId: {paymentId}", paymentData.PaymentId.ToString());
+        _logger.LogInformation("Sent payment data to client with PaymentId: {paymentId}, connection ID", paymentData.PaymentId.ToString());
 
 
 

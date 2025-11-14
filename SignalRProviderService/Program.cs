@@ -13,7 +13,7 @@ services.AddSignalR();
 services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<JoinHubGroupCommand>());
 services.AddMassTransit(busRegistrationConfigurator =>
 {
-    busRegistrationConfigurator.AddConsumer<PaymentDataRequestedEventHandler>();
+    busRegistrationConfigurator.AddConsumer<PaymentDataPreparedEventHandler>();
     busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
     busRegistrationConfigurator.UsingRabbitMq((context, cfg) =>
     {

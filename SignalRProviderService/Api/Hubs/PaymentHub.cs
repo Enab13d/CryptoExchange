@@ -13,16 +13,28 @@ public class PaymentHub(IMediator mediator, ILogger<PaymentHub> logger) : Hub<IP
     public async Task JoinHubGroup(string paymentId)
     {
 
-            _logger.LogInformation("Added connection {ConnId} to group {Group}", Context.ConnectionId, paymentId);
+        _logger.LogInformation("Added connection {ConnId} to group {Group}", Context.ConnectionId, paymentId);
 
-            // await Clients.Group(paymentId).ReceiveConnectionMessage($"{Context.ConnectionId}");
-            JoinHubGroupCommand command = new()
-            {
-                ConnectionId = Context.ConnectionId,
-                PaymentId = paymentId
-            };
-            await _mediator.Send(command);
+        await Groups.AddToGroupAsync(Context.ConnectionId, paymentId);
 
+        // await Clients.Group(paymentId).ReceiveConnectionMessage($"{Context.ConnectionId}");
+        JoinHubGroupCommand command = new()
+        {
+            ConnectionId = Context.ConnectionId,
+            PaymentId = paymentId
+        };
+        await _mediator.Send(command);
+
+    }
+    public async Task SendPaymentData(string paymentId)
+    {
+        _logger.LogInformation("Send Payment data command procedure invoked by client with paymentID {paymentId}", paymentId);
+        PaymentDataRequestedCommand command = new()
+        {
+            ConnectionId = Context.ConnectionId,
+            PaymentId = paymentId
+        };
+        await _mediator.Send(command);
     }
 
 

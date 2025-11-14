@@ -29,7 +29,7 @@ public class SendToSignalRProviderStep : StepBodyAsync
             Data = Input.PaymentData.Data,
             Signature = Input.PaymentData.Signature
         };
-        _logger.LogInformation("Publishing payload to SendToSignalRProviderStep: {data}, {signature}", message.Data, message.Signature);
+        _logger.LogInformation("Publishing payload from SendToSignalRProviderStep: {data}, {signature}", message.Data, message.Signature);
         await _publishEndpoint.Publish(message);
         return WorkflowCore.Models.ExecutionResult.Next();
     }
