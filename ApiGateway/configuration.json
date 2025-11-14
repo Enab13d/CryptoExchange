@@ -1,6 +1,19 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/api/swagger/index.html",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "workflow",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/swagger/workflow",
+      "UpstreamHttpMethod": ["GET"],
+      "RouteIsCaseSensitive": false
+    },
+    {
       "DownstreamPathTemplate": "/api/exchange",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

@@ -1,6 +1,7 @@
 using LiqPayProviderService.Domain.Constants;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SharedContracts.Constants;
 
 namespace LiqPayProviderService.Domain.RequestParameters;
 

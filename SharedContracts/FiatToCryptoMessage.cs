@@ -1,12 +1,14 @@
-﻿namespace SharedContracts
+﻿using SharedContracts.Constants;
+
+namespace SharedContracts
 {
     public class FiatToCryptoMessage
     {
         public Guid CorrelationId { get; set; }
-        public string Fiat { get; set; } = default!;
-        public string Crypto { get; set; } = default!;
+        public Currency Fiat { get; set; }
+        public Crypto Crypto { get; set; }
         public decimal Amount { get; set; }
-        public string Currency { get; init; } = string.Empty;
+        public Currency Currency { get; init; }
         public string Description { get; init; } = string.Empty;
         public Guid OrderId { get; set; }
         public Guid PaymentId { get; init; }

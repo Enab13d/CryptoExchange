@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedContracts;
 using Workflow.Services;
-using Workflow.Domain.Constants;
+using SharedContracts.Constants;
 
 namespace Workflow.Controllers
 {
@@ -19,17 +19,6 @@ namespace Workflow.Controllers
         [HttpPost]
         public async Task<IActionResult> Exchange(DepositDTO deposit)
         {
-            bool isCurrencyValid = Enum.TryParse(deposit.Currency, false, out Currency currency);
-            if (!isCurrencyValid)
-            {
-                return BadRequest($"Currency {deposit.Currency} is not supported");
-
-            }
-            bool isCryptoValid = Enum.TryParse(deposit.Crypto, false, out Crypto crypto);
-            if (!isCryptoValid)
-            {
-                return BadRequest($"Crypto {deposit.Crypto} is not supported");
-            }
 
             Guid paymentId = Guid.NewGuid();
             Guid correlationId = Guid.NewGuid();
@@ -45,8 +34,6 @@ namespace Workflow.Controllers
                 PaymentId = paymentId,
                 CorrelationId = correlationId,
                 OrderId = correlationId
-
-
 
             });
             var response = new

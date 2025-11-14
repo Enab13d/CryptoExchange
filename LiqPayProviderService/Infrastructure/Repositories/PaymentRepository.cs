@@ -1,8 +1,3 @@
-
-//  2. Implement payment repository LiqPayProviderService/Persistence/PaymentRepository.cs
-
-// example
-// https://github.com/dotnet-architecture/eShopOnContainersAI/blob/dev/src/Services/Ordering/Ordering.Infrastructure/Repositories/BuyerRepository.cs
 using LiqPayProviderService.Domain;
 using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
@@ -30,18 +25,19 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
     {
         return _context.Payments.Add(entity).Entity;
     }
-    public void Update(Payment payment)
+    public async Task Update(Payment payment)
     {
-        Payment? existing = _context.Payments.FirstOrDefault(e => e.CorrelationId == payment.CorrelationId);
-        if (existing is null) return;
+        Payment? existing = await _context.Payments.FirstOrDefaultAsync(e => e.CorrelationId == payment.CorrelationId)
+        ?? throw new KeyNotFoundException($"Unable to update. Payment with correlationId {payment.CorrelationId} not exist.");
 
         existing.Status = payment.Status;
         existing.UpdatedAt = DateTime.Now;
     }
 
-    public void UpdateById(Guid correlationId, PaymentStatus paymentStatus)
+    public async Task UpdateById(Guid correlationId, PaymentStatus paymentStatus)
     {
-        Payment? existing = _context.Payments.FirstOrDefault(e => e.CorrelationId == correlationId);
+        Payment? existing = await _context.Payments.FirstOrDefaultAsync(e => e.CorrelationId == correlationId)
+         ?? throw new KeyNotFoundException($"Unable to update. Payment with correlationId {correlationId} not exist."); ;
         if (existing is null) return;
 
         existing.Status = paymentStatus;

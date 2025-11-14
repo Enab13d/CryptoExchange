@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SharedContracts;
+using SharedContracts.Constants;
 
 namespace LiqPayProviderService.Commands;
 
@@ -9,8 +10,8 @@ public record ProcessDepositCommand : IRequest<PaymentDataDTO>
     public Guid Id { get; init; }
 
     public Guid PaymentId { get; init; }
-    public string Fiat { get; set; } = default!;
-    public string Crypto { get; set; } = default!;
+    public Currency Fiat { get; set; }
+    public Crypto Crypto { get; set; }
     public decimal Amount { get; init; }
     // інші поля
     public string Description { get; init; } = string.Empty;

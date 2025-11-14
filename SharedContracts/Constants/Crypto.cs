@@ -1,4 +1,4 @@
-namespace Workflow.Domain.Constants;
+namespace SharedContracts.Constants;
 
 public enum Crypto
 {

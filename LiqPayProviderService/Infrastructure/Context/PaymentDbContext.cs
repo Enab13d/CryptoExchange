@@ -12,12 +12,11 @@ public class PaymentDbContext(DbContextOptions<PaymentDbContext> options) : DbCo
 
 
 
-    // protected override void OnModelCreating(ModelBuilder modelBuilder)
-    // {
-    //     modelBuilder.Entity<PaymentInfo>().ToCollection("payments");
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
 
-    //     modelBuilder.ApplyConfigurationsFromAssembly(typeof(PaymentDbContext).Assembly);
-    // }
-    
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PaymentDbContext).Assembly);
+    }
+
 
 }

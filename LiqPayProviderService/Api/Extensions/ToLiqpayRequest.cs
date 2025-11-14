@@ -8,13 +8,11 @@ public static class ToLiqpayRequest
 {
     public static CardPaymentRequest ToCardPaymentRequest(this DepositDTO dto)
     {
-        bool isValidCurrency = Enum.TryParse<Currency>(dto.Currency, true, out var currency);
-        if (!isValidCurrency) throw new ArgumentException($"Provided invalid currency: {dto.Currency}", dto.Currency);
 
         return new CardPaymentRequest
         {
             Amount = dto.Amount,
-            Currency = currency,
+            Currency = dto.Currency,
             Description = dto.Description,
             OrderId = dto.OrderId,
             Phone = dto.Phone,

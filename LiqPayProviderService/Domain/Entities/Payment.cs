@@ -1,6 +1,7 @@
 using LiqPayProviderService.Domain.Constants;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using SharedContracts.Constants;
 
 namespace LiqPayProviderService.Domain.Entities;
 
@@ -13,8 +14,8 @@ public class Payment
 
     public Guid PaymentId { get; init; }
     public decimal Amount { get; set; }
-    public string Fiat { get; set; } = string.Empty;
-    public string Crypto { get; set; } = string.Empty;
+    public Currency Fiat { get; set; }
+    public Crypto Crypto { get; set; }
     [BsonRepresentation(BsonType.String)]
     public PaymentStatus Status { get; set; }
 

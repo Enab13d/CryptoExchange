@@ -1,13 +1,10 @@
-
-
 using System.Text;
 using LiqPayProviderService.Domain;
-using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SharedContracts;
+
 
 namespace LiqPayProviderService.Api.Controllers;
 
@@ -42,15 +39,10 @@ public class PaymentController(IWebhookService webhookService, IPaymentRepositor
         ArgumentNullException.ThrowIfNull(paymentInfo);
         ArgumentNullException.ThrowIfNull(paymentInfo.OrderId);
         Guid correlationId = Guid.Parse(paymentInfo.OrderId);
-        _paymentRepository.UpdateById(correlationId, paymentInfo.Status);
+        await _paymentRepository.UpdateById(correlationId, paymentInfo.Status);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _webhookService.Publish(correlationId, DepositStatus.Success, cancellationToken);
         return Ok("Callback processed successfully");
     }
-    [HttpPost("deposit")]
-    public async Task<IActionResult> HandleDeposit(DepositDTO deposit, CancellationToken cancellationToken)
-    {
-        PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
-        return Ok(paymentData);
-    }
+
 }
