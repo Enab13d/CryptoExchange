@@ -1,6 +1,7 @@
 ﻿using SharedContracts;
 using Workflow.Workflows.Steps;
 using WorkflowCore.Interface;
+using WorkflowCore.Models;
 
 namespace Workflow.Workflows
 {
@@ -14,9 +15,16 @@ namespace Workflow.Workflows
             builder
                 .StartWith<SendToLiqPayProviderStep>()
                     .Input(step => step.Payload, data => data)
-                .WaitFor("liqpay-response", data => data.CorrelationId.ToString())
-                    .Name("WaitForLiqPayResponse")
-                    .Output(data => data.Response, step => (FiatToCryptoResponseMessage)step.EventData);
+
+                .WaitFor("form-data-prepared", data => data.CorrelationId.ToString())
+                .Output(data => data.PaymentData, step => (PaymentDataDTO)step.EventData)
+                .WaitFor("websocket-connection-established", data => data.PaymentId.ToString())
+                .Output(data => data.WebsocketConnectionMessage, step => (WebsocketConnectionMessage)step.EventData)
+                .WaitFor("payment-data-requested", data => data.PaymentId.ToString())
+                .Then<SendToSignalRProviderStep>()
+                    .Input(step => step.Input, data => data)
+
+                .EndWorkflow();
 
         }
     }

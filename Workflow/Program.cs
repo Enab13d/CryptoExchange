@@ -1,6 +1,9 @@
+using System.Text.Json.Serialization;
 using MassTransit;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using SharedContracts;
+using Workflow.IntegrationEvents.Handlers;
 using Workflow.Services;
 using Workflow.Workflows;
 using Workflow.Workflows.Steps;
@@ -8,7 +11,7 @@ using WorkflowCore.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));;
 
 var mongoConn = builder.Configuration["Mongo:ConnectionString"] ?? throw new InvalidOperationException("Missing Mongo connection string");
 var mongoDatabaseName = builder.Configuration["Mongo:DatabaseName"] ?? throw new InvalidOperationException("Missing Mongo db database");
@@ -25,10 +28,16 @@ builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
 builder.Services.AddTransient<IWorkflowService, WorkflowService>();
 builder.Services.AddTransient<IWorkflow<FiatToCryptoMessage>, FiatToCryptoWorkflow>();
 builder.Services.AddTransient<SendToLiqPayProviderStep>();
+builder.Services.AddTransient<SendToSignalRProviderStep>();
 
 // Add MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<LiqpayResponseReceivedEventHandler>();
+    x.AddConsumer<FormDataReceivedEventHandler>();
+    x.AddConsumer<WebsocketConnectionEstablishedEventHandler>();
+    x.AddConsumer<PaymentDataRequestedEventHandler>();
+
     x.SetKebabCaseEndpointNameFormatter();
 
     x.UsingRabbitMq((context, cfg) =>
@@ -43,8 +52,28 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(name: "v1", new OpenApiInfo
+    {
+        Title = "Liqpay payment provider",
+        Version = "v1",
+        Description = "Processing payment requests"
+    });
 
+}
+
+);
 var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("api/swagger/v1/swagger.json", "v1");
+    });
+}
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();

@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/exchange/{currencyPair}",
+      "DownstreamPathTemplate": "/api/swagger/index.html",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -9,9 +9,47 @@
           "Port": 5004
         }
       ],
-      "UpstreamPathTemplate": "/exchange/{currencyPair}",
-      "UpstreamHttpMethod": [ "POST" ],
+      "UpstreamPathTemplate": "/swagger/workflow",
+      "UpstreamHttpMethod": ["GET"],
       "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/exchange",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "workflow",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/exchange",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/payment/callback",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "liqpayproviderservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/payment/callback",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/hub/{route}",
+      "UpstreamPathTemplate": "/hub/{route}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "signalrproviderservice",
+          "Port": 5007
+        }
+      ],
+      "UpstreamHttpMethod": ["OPTIONS", "POST", "GET"]
     }
   ],
   "GlobalConfiguration": {
