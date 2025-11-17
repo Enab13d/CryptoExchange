@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedContracts", "SharedCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRProviderService", "SignalRProviderService\SignalRProviderService.csproj", "{5E3083F4-30AB-48FC-8CD0-723BB8475E2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockchainProviderService", "BlockchainProviderService\BlockchainProviderService.csproj", "{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,18 @@ Global
 		{5E3083F4-30AB-48FC-8CD0-723BB8475E2A}.Release|x64.Build.0 = Release|Any CPU
 		{5E3083F4-30AB-48FC-8CD0-723BB8475E2A}.Release|x86.ActiveCfg = Release|Any CPU
 		{5E3083F4-30AB-48FC-8CD0-723BB8475E2A}.Release|x86.Build.0 = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|x64.Build.0 = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Debug|x86.Build.0 = Debug|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x64.ActiveCfg = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x64.Build.0 = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x86.ActiveCfg = Release|Any CPU
+		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
