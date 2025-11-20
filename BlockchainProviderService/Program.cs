@@ -1,6 +1,9 @@
+using BlockchainProviderService.Application.Commands;
 using BlockchainProviderService.Application.Mappers;
 using BlockchainProviderService.Application.Services;
 using BlockchainProviderService.Infrastracture.Configuration;
+using BlockchainProviderService.Infrastracture.IntegrationEvents.Handlers;
+using MassTransit;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,26 @@ services.AddHttpClient<ICryptoMarketDataClient, CryptoMarketDataClient>((sp, cli
     CryptoMarketDataClientOptions options = sp.GetRequiredService<IOptions<CryptoMarketDataClientOptions>>().Value;
     client.BaseAddress = new Uri(options.ProviderAPIURL);
     client.DefaultRequestHeaders.TryAddWithoutValidation("X-CMC_PRO_API_KEY", options.PrivateKey);
+});
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProcessCryptoPayoutCommand>());
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<CryptoPayoutRequestedEventHandler>();
+
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
+        {
+            h.Username(builder.Configuration["RabbitMQ:Username"]);
+            h.Password(builder.Configuration["RabbitMQ:Password"]);
+        });
+
+        // Configure endpoints here if needed
+        cfg.ConfigureEndpoints(context);
+    });
 });
 
 var app = builder.Build();

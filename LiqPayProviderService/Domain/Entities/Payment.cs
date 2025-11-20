@@ -19,6 +19,8 @@ public class Payment
     [BsonRepresentation(BsonType.String)]
     public PaymentStatus Status { get; set; }
 
+    public string WalletAddress { get; set; } = default!;
+
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; init; }
 

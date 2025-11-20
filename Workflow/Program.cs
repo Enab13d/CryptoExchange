@@ -5,13 +5,15 @@ using MongoDB.Driver;
 using SharedContracts;
 using Workflow.IntegrationEvents.Handlers;
 using Workflow.Services;
-using Workflow.Workflows;
-using Workflow.Workflows.Steps;
+using Workflow.Workflows.CryptoPayoutWorkflow;
+using Workflow.Workflows.CryptoPayoutWorkflow.Steps;
+using Workflow.Workflows.FiatOnRampWorkflow;
+using Workflow.Workflows.FiatOnRampWorkflow.Steps;
 using WorkflowCore.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));;
+builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
 
 var mongoConn = builder.Configuration["Mongo:ConnectionString"] ?? throw new InvalidOperationException("Missing Mongo connection string");
 var mongoDatabaseName = builder.Configuration["Mongo:DatabaseName"] ?? throw new InvalidOperationException("Missing Mongo db database");
@@ -26,9 +28,12 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
 
 builder.Services.AddTransient<IWorkflowService, WorkflowService>();
-builder.Services.AddTransient<IWorkflow<FiatToCryptoMessage>, FiatToCryptoWorkflow>();
+builder.Services.AddTransient<IWorkflow<FiatOnRampMessage>, FiatOnRampWorkflow>();
 builder.Services.AddTransient<SendToLiqPayProviderStep>();
 builder.Services.AddTransient<SendToSignalRProviderStep>();
+
+builder.Services.AddTransient<IWorkflow<CryptoPayoutMessage>, CryptoPayoutWorkflow>();
+builder.Services.AddTransient<SendToBlockchainProviderStep>();
 
 // Add MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
@@ -83,8 +88,10 @@ app.MapControllers();
 var registry = app.Services.GetRequiredService<IWorkflowRegistry>();
 
 // Register your workflow
-var workflow = app.Services.GetRequiredService<IWorkflow<FiatToCryptoMessage>>();
-registry.RegisterWorkflow(workflow);
+var fiatOnRampWorkflow = app.Services.GetRequiredService<IWorkflow<FiatOnRampMessage>>();
+var cryptoPayoutWorkflow = app.Services.GetRequiredService<IWorkflow<CryptoPayoutMessage>>();
+registry.RegisterWorkflow(fiatOnRampWorkflow);
+registry.RegisterWorkflow(cryptoPayoutWorkflow);
 
 var host = app.Services.GetRequiredService<IWorkflowHost>();
 host.Start();

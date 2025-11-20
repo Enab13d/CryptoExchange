@@ -4,7 +4,7 @@ using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Signer;
-using SharedContracts.Constants;
+using BlockchainProviderService.Application.Commands;
 
 namespace BlockchainProviderService.Application.Services;
 
@@ -40,11 +40,11 @@ public class EthereumProviderService(IOptions<BlockchainProviderOptions> options
         _logger.LogInformation("Wallet address: {publicKey}", walletAddress);
     }
     //send crypto to client
-    public async Task SendCryptoAsync(string walletAddress, Currency fiat, Crypto crypto, decimal amount)
+    public async Task PayoutCryptoAsync(ProcessCryptoPayoutCommand request)
     {
 
         //check the course
-        decimal requestedCrypto = await _client.ConvertFiatToCryptoAsync(fiat, crypto, amount);
+        decimal requestedCrypto = await _client.ConvertFiatToCryptoAsync(request.Fiat, request.Crypto, request.Amount);
         // take 1% margin
         requestedCrypto *= 0.99m;
         //check exchange balance
@@ -57,11 +57,10 @@ public class EthereumProviderService(IOptions<BlockchainProviderOptions> options
         string rpcURL = $"{_options.Value.Ethereum.NodeProviderURL}/{_options.Value.Ethereum.NodeAPIKey}";
         Account account = new(_options.Value.Ethereum.ExchangeWalletPrivateKey, Chain.Sepolia);
         Web3 web3 = new(account, rpcURL);
-        var weiAmount = Web3.Convert.ToWei(requestedCrypto);
-        var txHash = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(walletAddress, requestedCrypto);
-        // txHash.Status;
+        // var weiAmount = Web3.Convert.ToWei(requestedCrypto);
+        var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(request.WalletAddress, requestedCrypto);
 
-
+        _logger.LogInformation("Transaction hash: {hash}, status: {status}", tx.TransactionHash, tx.Status);
 
 
     }

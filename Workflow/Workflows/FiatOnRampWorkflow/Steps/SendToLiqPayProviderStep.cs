@@ -3,7 +3,7 @@ using SharedContracts;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
-namespace Workflow.Workflows.Steps
+namespace Workflow.Workflows.FiatOnRampWorkflow.Steps
 {
     public class SendToLiqPayProviderStep : StepBodyAsync
     {
@@ -14,7 +14,7 @@ namespace Workflow.Workflows.Steps
             _publishEndpoint = publishEndpoint;
         }
 
-        public FiatToCryptoMessage Payload { get; set; } = default!;
+        public FiatOnRampMessage Payload { get; set; } = default!;
 
         public override async Task<WorkflowCore.Models.ExecutionResult> RunAsync(IStepExecutionContext context)
         {

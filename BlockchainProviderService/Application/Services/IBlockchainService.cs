@@ -1,10 +1,10 @@
-using SharedContracts.Constants;
+using BlockchainProviderService.Application.Commands;
 
 namespace BlockchainProviderService.Application.Services;
 
 //define strategy interface
 public interface IBlockchainService
 {
-    public Task SendCryptoAsync(string walletAddress, Currency fiat, Crypto crypto, decimal amount);
+    public Task PayoutCryptoAsync(ProcessCryptoPayoutCommand request);
 
 }

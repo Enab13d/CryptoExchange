@@ -50,7 +50,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Crypto = command.Crypto,
             Status = PaymentStatus.Processing,
             CreatedAt = timestamp,
-            UpdatedAt = timestamp
+            UpdatedAt = timestamp,
+            WalletAddress = command.WalletAddress
 
         }, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -63,7 +64,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             OrderId = command.OrderId.ToString(),
             Phone = command.Phone,
             Crypto = command.Crypto,
-            PaymentId = command.PaymentId
+            PaymentId = command.PaymentId,
+            WalletAddress = command.WalletAddress
         };
 
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);

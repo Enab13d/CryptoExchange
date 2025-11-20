@@ -5,14 +5,14 @@ using SharedContracts;
 
 namespace LiqPayProviderService.IntegrationEvents.Handlers;
 
-public class DepositRequestedEventHandler(IMediator mediator) : IConsumer<FiatToCryptoMessage>
+public class DepositRequestedEventHandler(IMediator mediator) : IConsumer<FiatOnRampMessage>
 {
     private readonly IMediator _mediator = mediator;
 
-    public async Task Consume(ConsumeContext<FiatToCryptoMessage> context)
+    public async Task Consume(ConsumeContext<FiatOnRampMessage> context)
     {
-        
-        FiatToCryptoMessage msg = context.Message;
+
+        FiatOnRampMessage msg = context.Message;
         var command = new ProcessDepositCommand
         {
             Id = msg.CorrelationId,
@@ -24,6 +24,7 @@ public class DepositRequestedEventHandler(IMediator mediator) : IConsumer<FiatTo
             Description = msg.Description,
             OrderId = msg.OrderId,
             Phone = msg.Phone,
+            WalletAddress = msg.WalletAddress
 
         };
 

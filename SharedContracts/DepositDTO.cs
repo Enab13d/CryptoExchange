@@ -14,5 +14,6 @@ public record DepositDTO()
     public required string Description { get; init; }
     public string OrderId { get; init; } = string.Empty;
     public required string Phone { get; init; }
+    public required string WalletAddress { get; init; } = string.Empty;
 
 }
