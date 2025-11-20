@@ -67,6 +67,25 @@ services:
       - MongoDatabaseName=workflowdb
       - WebhookOptions__URL=https://aqueous-worrisome-lasandra.ngrok-free.dev
 
+  blockchainproviderservice:
+    image: ${DOCKER_REGISTRY-}blockchainproviderservice
+    build:
+      context: .
+      dockerfile: BlockchainProviderService/Dockerfile
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+        - .env
+    environment:
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - ConnectionStrings__MongoConnection=mongodb://mongo:27017
+      - MongoDatabaseName=workflowdb
+
   mongo:
     image: mongo:6.0
     restart: unless-stopped
