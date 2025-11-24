@@ -1,4 +1,4 @@
-using BlockchainProviderService.Domain.Entities;
+using BlockchainProviderService.Application.Constants;
 
 namespace BlockchainProviderService.Application.Services;
 
