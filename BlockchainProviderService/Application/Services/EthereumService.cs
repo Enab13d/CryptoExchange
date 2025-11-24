@@ -30,15 +30,14 @@ public class EthereumProviderService(IOptions<BlockchainProviderOptions> options
 
     }
 
-    public void RegisterWallet()
-    {
-        //create wallet
-        EthECKey ecKey = EthECKey.GenerateKey();
-        string privateKey = ecKey.GetPrivateKey();
-        string walletAddress = ecKey.GetPublicAddress();
-        _logger.LogInformation("Private key: {privateKey}", privateKey);
-        _logger.LogInformation("Wallet address: {publicKey}", walletAddress);
-    }
+    // public void RegisterWallet()
+    // {
+    //     //create wallet
+    //     EthECKey ecKey = EthECKey.GenerateKey();
+    //     string privateKey = ecKey.GetPrivateKey();
+    //     string walletAddress = ecKey.GetPublicAddress();
+    //     _logger.LogInformation("Wallet address: {publicKey}", walletAddress);
+    // }
     //send crypto to client
     public async Task PayoutCryptoAsync(ProcessCryptoPayoutCommand request)
     {
