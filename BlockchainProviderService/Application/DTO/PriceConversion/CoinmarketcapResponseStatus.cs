@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-namespace BlockchainProviderService.Domain.Entities;
+namespace BlockchainProviderService.Application.DTO.PriceConversion;
 
 
 public record CoinmarketcapResponseStatus

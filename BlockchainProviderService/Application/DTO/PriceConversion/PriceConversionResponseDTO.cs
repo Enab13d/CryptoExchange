@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
-namespace BlockchainProviderService.Domain.Entities;
+namespace BlockchainProviderService.Application.DTO.PriceConversion;
 
 
-public record PriceConversionResponse
+public record PriceConversionResponseDTO
 {
     [JsonProperty("data")]
     public PriceConversionResponseData Data { get; set; } = default!;

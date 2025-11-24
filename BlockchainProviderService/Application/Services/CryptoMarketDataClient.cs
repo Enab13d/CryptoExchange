@@ -1,7 +1,6 @@
-using System.Threading.Tasks;
 using System.Web;
+using BlockchainProviderService.Application.DTO.PriceConversion;
 using BlockchainProviderService.Application.Mappers;
-using BlockchainProviderService.Domain.Entities;
 using SharedContracts.Constants;
 
 namespace BlockchainProviderService.Application.Services;
@@ -15,7 +14,7 @@ public class CryptoMarketDataClient(HttpClient httpClient, ICurrencyMapper curre
         int fromId = _currencyMapper.CryptoToConversionId(crypto);
         int toId = _currencyMapper.FiatToConverstionId(fiat);
 
-        PriceConversionResponse response = await SendPriceConversionRequest(fromId, toId, amount);
+        PriceConversionResponseDTO response = await SendPriceConversionRequest(fromId, toId, amount);
         return ExtractCurrencyValue(response);
 
     }
@@ -25,16 +24,16 @@ public class CryptoMarketDataClient(HttpClient httpClient, ICurrencyMapper curre
         int toId = _currencyMapper.CryptoToConversionId(crypto);
         int fromId = _currencyMapper.FiatToConverstionId(fiat);
 
-        PriceConversionResponse response = await SendPriceConversionRequest(fromId, toId, amount);
+        PriceConversionResponseDTO response = await SendPriceConversionRequest(fromId, toId, amount);
         return ExtractCurrencyValue(response);
     }
 
-    private async Task<PriceConversionResponse> SendPriceConversionRequest(int fromId, int toId, decimal amount)
+    private async Task<PriceConversionResponseDTO> SendPriceConversionRequest(int fromId, int toId, decimal amount)
     {
         string url = BuildQueryURL(fromId, toId, amount);
         HttpResponseMessage httpResponse = await _httpClient.GetAsync(url);
         httpResponse.EnsureSuccessStatusCode();
-        PriceConversionResponse? response = await httpResponse.Content.ReadFromJsonAsync<PriceConversionResponse>()
+        PriceConversionResponseDTO? response = await httpResponse.Content.ReadFromJsonAsync<PriceConversionResponseDTO>()
         ?? throw new Exception("Empty response from CoinMarketCap API");
         return response;
 
@@ -50,6 +49,6 @@ public class CryptoMarketDataClient(HttpClient httpClient, ICurrencyMapper curre
         builder.Query = query.ToString();
         return builder.ToString();
     }
-    private static decimal ExtractCurrencyValue(PriceConversionResponse response) => response.Data.Quote.First().Value.Price;
+    private static decimal ExtractCurrencyValue(PriceConversionResponseDTO response) => response.Data.Quote.First().Value.Price;
 
 }
