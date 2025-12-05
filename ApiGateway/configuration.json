@@ -30,7 +30,7 @@
       },
 
       "RouteClaimsRequirement": {
-        "roles": "manage-account"
+        "roles": ["manage-account"]
       },
       "RouteIsCaseSensitive": false
     },

@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using SharedContracts;
+using Workflow.Infrastructure.Configuration;
+using Workflow.Infrastructure.Policies;
 using Workflow.IntegrationEvents.Handlers;
 using Workflow.Services;
 using Workflow.Workflows.CryptoPayoutWorkflow;
@@ -16,7 +18,7 @@ using WorkflowCore.Interface;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
-
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 var mongoConn = builder.Configuration["Mongo:ConnectionString"] ?? throw new InvalidOperationException("Missing Mongo connection string");
 var mongoDatabaseName = builder.Configuration["Mongo:DatabaseName"] ?? throw new InvalidOperationException("Missing Mongo db database");
 
@@ -59,25 +61,29 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
+JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
+.Get<JwtOptions>() ?? throw new InvalidOperationException("JWT options not defined");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-    options.Authority = "http://keycloak:8080/realms/ce-realm";
+    options.Authority = jwtOptions.Authority;
     options.MapInboundClaims = false;
     options.RequireHttpsMetadata = false; //dev only
     options.TokenValidationParameters = new TokenValidationParameters
     {
         RoleClaimType = "role",
-        ValidIssuer = "http://localhost:18080/realms/ce-realm",
+        ValidIssuer = jwtOptions.ValidIssuer,
         ValidateIssuer = false,
-        ValidAudience = "ce-client",
+        ValidAudience = jwtOptions.ValidAudience,
         ValidateAudience = true
     };
 });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdministratorRole",
+    options.AddPolicy(WorkflowAuthorizationPolicy.AdminPolicy,
     policy => policy.RequireRole("admin"));
+    options.AddPolicy(WorkflowAuthorizationPolicy.UserPolicy, policy =>
+     policy.RequireRole("default-roles-ce-realm"));
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

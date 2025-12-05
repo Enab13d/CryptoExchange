@@ -3,23 +3,16 @@ using SharedContracts;
 using Workflow.Services;
 using Microsoft.AspNetCore.Authorization;
 using Workflow.Extensions;
-using System.Reflection;
+using Workflow.Infrastructure.Policies;
 
 namespace Workflow.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "RequireAdministratorRole")]
-    public class ExchangeController : ControllerBase
+    [Authorize(Policy = WorkflowAuthorizationPolicy.UserPolicy)]
+    public class ExchangeController(IWorkflowService workflowService) : ControllerBase
     {
-        private readonly IWorkflowService _workflowService;
-        private readonly ILogger<ExchangeController> _logger;
-
-        public ExchangeController(IWorkflowService workflowService, ILogger<ExchangeController> logger)
-        {
-            _workflowService = workflowService;
-            _logger = logger;
-        }
+        private readonly IWorkflowService _workflowService = workflowService;
 
         [HttpPost]
         public async Task<IActionResult> Exchange(DepositDTO deposit)
@@ -28,17 +21,6 @@ namespace Workflow.Controllers
             Guid paymentId = Guid.NewGuid();
             Guid correlationId = Guid.NewGuid();
             User user = HttpContext.UserFromClaims();
-            Type type = user.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            foreach (var header in Request.Headers)
-            {
-                _logger.LogInformation("{Header}: {Value}", header.Key, string.Join(",", header.Value.ToString()));
-            }
-            foreach (PropertyInfo property in properties)
-            {
-                _logger.LogInformation("{PropertyName}:{PropertyValue}", property.Name, property.GetValue(user));
-
-            }
 
             await _workflowService.StartFiatOnRampWorkflowAsync(new FiatOnRampMessage
             {

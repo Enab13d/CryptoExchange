@@ -1,3 +1,4 @@
+using ApiGateway.Infrastructure.Configuration;
 using ApiGateway.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("configuration.json", optional: false, reloadOnChange: true);
-
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.AddOcelot(builder.Configuration);
 builder.Services.AddSignalR();
 string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -24,18 +25,21 @@ builder.Services.AddCors(options =>
         ; ;
     });
 });
+JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
+.Get<JwtOptions>() ?? throw new InvalidOperationException("JWT options not defined");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-    options.Authority = "http://keycloak:8080/realms/ce-realm";
+    options.Authority = jwtOptions.Authority;
     options.MapInboundClaims = false;
     options.RequireHttpsMetadata = false; //dev only
     options.TokenValidationParameters = new TokenValidationParameters
     {
         RoleClaimType = "role",
-        ValidIssuer = "http://localhost:18080/realms/ce-realm",
+        ValidIssuer = jwtOptions.ValidIssuer,
         ValidateIssuer = false,
-        ValidAudience = "ce-client",
+        ValidAudience = jwtOptions.ValidAudience,
         ValidateAudience = true
     };
 });
