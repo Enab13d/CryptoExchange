@@ -24,7 +24,8 @@ public class DepositRequestedEventHandler(IMediator mediator) : IConsumer<FiatOn
             Description = msg.Description,
             OrderId = msg.OrderId,
             Phone = msg.Phone,
-            WalletAddress = msg.WalletAddress
+            WalletAddress = msg.WalletAddress,
+            User = msg.User
 
         };
 

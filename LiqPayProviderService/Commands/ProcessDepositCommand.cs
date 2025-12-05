@@ -19,4 +19,6 @@ public record ProcessDepositCommand : IRequest<PaymentDataDTO>
     public string Description { get; init; } = string.Empty;
     public Guid OrderId { get; init; }
     public string Phone { get; init; } = string.Empty;
+
+    public User User { get; set; } = null!;
 }

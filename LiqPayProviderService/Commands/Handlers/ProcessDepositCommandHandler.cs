@@ -51,7 +51,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             Status = PaymentStatus.Processing,
             CreatedAt = timestamp,
             UpdatedAt = timestamp,
-            WalletAddress = command.WalletAddress
+            WalletAddress = command.WalletAddress,
+            User = command.User
 
         }, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -99,7 +99,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev
+    env_file:
+      - .env
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    ports:
+      - 18080:8080
 volumes:
   mongo-data:
+  keycloak-data:
 

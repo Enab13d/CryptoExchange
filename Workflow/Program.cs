@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using SharedContracts;
@@ -57,6 +59,26 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.Authority = "http://keycloak:8080/realms/ce-realm";
+    options.MapInboundClaims = false;
+    options.RequireHttpsMetadata = false; //dev only
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        ValidIssuer = "http://localhost:18080/realms/ce-realm",
+        ValidateIssuer = false,
+        ValidAudience = "ce-client",
+        ValidateAudience = true
+    };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdministratorRole",
+    policy => policy.RequireRole("admin"));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -66,10 +88,10 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "Processing payment requests"
     });
-
 }
 
 );
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -79,8 +101,10 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("api/swagger/v1/swagger.json", "v1");
     });
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

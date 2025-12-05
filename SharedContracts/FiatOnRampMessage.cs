@@ -15,6 +15,7 @@ namespace SharedContracts
         public string Phone { get; init; } = string.Empty;
         public string WalletAddress { get; init; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public User User { get; set; } = null!;
         public PaymentDataDTO PaymentData { get; set; } = default!;
         public WebsocketConnectionMessage WebsocketConnectionMessage { get; set; } = default!;
         public PreparedFormDataMessage PreparedFormDataMessage { get; set; } = default!;
