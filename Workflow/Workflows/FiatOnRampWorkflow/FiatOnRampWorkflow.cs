@@ -1,16 +1,15 @@
 ﻿using SharedContracts;
-using Workflow.Workflows.Steps;
+using Workflow.Workflows.FiatOnRampWorkflow.Steps;
 using WorkflowCore.Interface;
-using WorkflowCore.Models;
 
-namespace Workflow.Workflows
+namespace Workflow.Workflows.FiatOnRampWorkflow
 {
-    public class FiatToCryptoWorkflow : IWorkflow<FiatToCryptoMessage>
+    public class FiatOnRampWorkflow : IWorkflow<FiatOnRampMessage>
     {
-        public string Id => "FiatToCryptoWorkflow";
+        public string Id => "FiatOnRampWorkflow";
         public int Version => 1;
 
-        public void Build(IWorkflowBuilder<FiatToCryptoMessage> builder)
+        public void Build(IWorkflowBuilder<FiatOnRampMessage> builder)
         {
             builder
                 .StartWith<SendToLiqPayProviderStep>()

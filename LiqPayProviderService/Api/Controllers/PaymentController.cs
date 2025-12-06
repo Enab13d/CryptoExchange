@@ -2,21 +2,23 @@ using System.Text;
 using LiqPayProviderService.Domain;
 using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SharedContracts;
 
 
 namespace LiqPayProviderService.Api.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class PaymentController(IWebhookService webhookService, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, ILiqpayService liqpayService, ILogger<PaymentController> logger) : ControllerBase
+public class PaymentController(IPublishEndpoint publishEndpoint, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, ILiqpayService liqpayService, ILogger<PaymentController> logger) : ControllerBase
 {
 
     private readonly ILiqpayService _liqpayService = liqpayService;
     private readonly IPaymentRepository _paymentRepository = paymentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IWebhookService _webhookService = webhookService;
+    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
     private readonly ILogger<PaymentController> _logger = logger;
     [HttpPost("callback")]
     public async Task<IActionResult> HandleLiqpayCallback(CancellationToken cancellationToken)
@@ -41,7 +43,15 @@ public class PaymentController(IWebhookService webhookService, IPaymentRepositor
         Guid correlationId = Guid.Parse(paymentInfo.OrderId);
         await _paymentRepository.UpdateById(correlationId, paymentInfo.Status);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        await _webhookService.Publish(correlationId, DepositStatus.Success, cancellationToken);
+        Payment? payment = await _paymentRepository.GetByCorrelationId(correlationId) ?? throw new KeyNotFoundException($"Payment with id {correlationId} not found");
+        await _publishEndpoint.Publish(new FiatToCryptoResponseMessage()
+        {
+            CorrelationId = correlationId,
+            Crypto = payment.Crypto,
+            Fiat = payment.Fiat,
+            Amount = payment.Amount,
+            WalletAddress = payment.WalletAddress
+        }, cancellationToken);
         return Ok("Callback processed successfully");
     }
 

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using LiqPayProviderService.Domain;
 using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
@@ -20,6 +21,10 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
     public Payment? GetById(ObjectId id, CancellationToken cancellationToken = default)
     {
         return _context.Payments.FirstOrDefault(e => e.Id == id);
+    }
+    public async Task<Payment?> GetByCorrelationId(Guid correlationId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Payments.FirstOrDefaultAsync(e => e.CorrelationId == correlationId, cancellationToken);
     }
     public Payment Add(Payment entity, CancellationToken cancellationToken = default)
     {

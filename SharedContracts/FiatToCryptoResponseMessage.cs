@@ -1,11 +1,14 @@
-﻿namespace SharedContracts
+﻿using SharedContracts.Constants;
+
+namespace SharedContracts
 {
     public class FiatToCryptoResponseMessage
     {
         public Guid CorrelationId { get; set; }
-        public DepositStatus Status { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public Currency Fiat { get; set; }
+        public Crypto Crypto { get; set; }
+        public decimal Amount { get; set; }
+        public string WalletAddress { get; init; } = string.Empty;
 
     }
 }

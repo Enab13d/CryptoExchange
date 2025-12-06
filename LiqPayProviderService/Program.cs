@@ -19,7 +19,6 @@ builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectio
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILiqpayService, LiqPayService>();
-builder.Services.AddScoped<IWebhookService, WebhookService>();
 builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
 {
     var client = sp.GetRequiredService<IMongoClient>();

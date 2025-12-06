@@ -3,7 +3,7 @@ using SharedContracts;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
-namespace Workflow.Workflows.Steps;
+namespace Workflow.Workflows.FiatOnRampWorkflow.Steps;
 
 
 public class SendToSignalRProviderStep : StepBodyAsync
@@ -16,7 +16,7 @@ public class SendToSignalRProviderStep : StepBodyAsync
         _publishEndpoint = publishEndpoint;
         _logger = logger;
     }
-    public FiatToCryptoMessage Input
+    public FiatOnRampMessage Input
     { get; set; } = default!;
 
     public override async Task<WorkflowCore.Models.ExecutionResult> RunAsync(IStepExecutionContext context)

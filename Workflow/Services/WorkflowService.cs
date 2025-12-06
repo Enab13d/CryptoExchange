@@ -12,10 +12,15 @@ namespace Workflow.Services
             _workflowHost = workflowHost;
         }
 
-        public async Task StartFiatToCryptoWorkflowAsync(FiatToCryptoMessage payload)
+        public async Task StartCryptoPayoutWorkflow(CryptoPayoutMessage payload)
+        {
+            await _workflowHost.StartWorkflow("CryptoPayoutWorkflow", 1, payload);
+        }
+
+        public async Task StartFiatOnRampWorkflowAsync(FiatOnRampMessage payload)
         {
 
-            await _workflowHost.StartWorkflow("FiatToCryptoWorkflow", 1, payload);
+            await _workflowHost.StartWorkflow("FiatOnRampWorkflow", 1, payload);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SharedContracts
 {
-    public class FiatToCryptoMessage
+    public class FiatOnRampMessage
     {
         public Guid CorrelationId { get; set; }
         public Currency Fiat { get; set; }
@@ -13,11 +13,10 @@ namespace SharedContracts
         public Guid OrderId { get; set; }
         public Guid PaymentId { get; init; }
         public string Phone { get; init; } = string.Empty;
+        public string WalletAddress { get; init; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public PaymentDataDTO PaymentData { get; set; } = default!;
         public WebsocketConnectionMessage WebsocketConnectionMessage { get; set; } = default!;
-        public FiatToCryptoResponseMessage Response { get; set; } = default!;
-
         public PreparedFormDataMessage PreparedFormDataMessage { get; set; } = default!;
     }
 }
