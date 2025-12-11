@@ -72,6 +72,20 @@ services:
     env_file:
         - .env
 
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    ports:
+      - "5011:5011"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+        - .env
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5011
   mongo:
     image: mongo:6.0
     restart: unless-stopped

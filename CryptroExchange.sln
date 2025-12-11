@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRProviderService", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockchainProviderService", "BlockchainProviderService\BlockchainProviderService.csproj", "{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,18 @@ Global
 		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x64.Build.0 = Release|Any CPU
 		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x86.ActiveCfg = Release|Any CPU
 		{5A9282F5-281B-49A4-BFCA-ACB4EA753E37}.Release|x86.Build.0 = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|x64.Build.0 = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Debug|x86.Build.0 = Debug|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|x64.ActiveCfg = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|x64.Build.0 = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|x86.ActiveCfg = Release|Any CPU
+		{77BBFBB1-9BA5-48F7-9A90-A8C36B35DC50}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
