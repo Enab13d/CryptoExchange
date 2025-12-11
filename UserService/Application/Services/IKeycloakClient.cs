@@ -15,4 +15,6 @@ public interface IKeycloakClient
 
     public Task<UserInfoResponseDTO> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken = default);
 
+    public Task SendResetPasswordEmailAsync(string username, CancellationToken cancellationToken = default);
+
 }

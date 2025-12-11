@@ -75,4 +75,20 @@ public class AuthController(IKeycloakClient keycloak, IRequestMapper requestMapp
 
 
     }
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequestDTO request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _keycloak.SendResetPasswordEmailAsync(request.Username, cancellationToken);
+            _logger.LogInformation("Reset password success, please check email");
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error {msg}", ex.Message);
+            return BadRequest("Invalid username");
+        }
+
+    }
 }

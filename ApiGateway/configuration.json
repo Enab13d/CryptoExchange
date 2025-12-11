@@ -78,6 +78,19 @@
       "RouteIsCaseSensitive": false
     },
     {
+      "DownstreamPathTemplate": "/api/auth/reset-password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/reset-password",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
       "DownstreamPathTemplate": "/api/exchange",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

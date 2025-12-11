@@ -1,11 +1,16 @@
 
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using SharedContracts;
 using UserService.Application.DTO.Requests;
 using UserService.Application.DTO.Responses;
 using UserService.Infrastructure.Configuration;
+using UserService.Application.Extensions;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace UserService.Application.Services;
 
@@ -115,4 +120,41 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         ?? throw new Exception("userInfo is null");
         return userInfo;
     }
+
+    public async Task SendResetPasswordEmailAsync(string username, CancellationToken cancellationToken)
+    {
+        //obtain admin acess token
+        KCLoginResponseDTO admin = await GetAdminToken(cancellationToken);
+        //prepare and send request to check if user exists in KC
+        using HttpRequestMessage request = new(HttpMethod.Get, $"/admin/realms/{_options.RealmName}/users?username={Uri.EscapeDataString(username)}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", admin.AcessToken);
+        HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+        //check if user exist
+        // var users = await response.Content.ReadFromJsonAsync<List<JsonElement>>(cancellationToken);
+        string json = await response.Content.ReadAsStringAsync(cancellationToken);
+        List<UserInfoResponseDTO>? users = JsonConvert.DeserializeObject<List<UserInfoResponseDTO>>(json);
+
+        if (users is null || users.Count == 0)
+        {
+            throw new KeyNotFoundException($"User with username {username} not found");
+        }
+        //extract user id from response
+        UserInfoResponseDTO user = users.First();
+        //prepare and send reset password request
+        var resetUrl = $"/admin/realms/{_options.RealmName}/users/{user.Sub}/execute-actions-email" +
+                   $"?client_id={Uri.EscapeDataString(_options.ClientId)}" +
+                   $"&redirect_uri={Uri.EscapeDataString("http://localhost:4200")}";
+
+        using HttpRequestMessage resetPasswordRequest = new(HttpMethod.Put, resetUrl)
+        {
+            Content = new StringContent(JsonConvert.SerializeObject(new List<string> { "UPDATE_PASSWORD" }), Encoding.UTF8, "application/json")
+        };
+        resetPasswordRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", admin.AcessToken);
+
+        var resetPasswordResponse = await _httpClient.SendAsync(resetPasswordRequest, cancellationToken);
+        resetPasswordResponse.EnsureSuccessStatusCode();
+
+    }
+
+
 }
