@@ -1,54 +1,48 @@
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.DTO.Requests;
 using UserService.Application.DTO.Responses;
-using UserService.Application.Mappers;
 using UserService.Application.Services;
 
 namespace UserService.Application.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class AuthController(IKeycloakClient keycloak, IRequestMapper requestMapper, IResponseMapper responseMapper, ILogger<AuthController> logger) : ControllerBase
+public class AuthController(ILogger<AuthController> logger, IAuthService authService) : ControllerBase
 {
-    private readonly IKeycloakClient _keycloak = keycloak;
 
     private readonly ILogger<AuthController> _logger = logger;
-    private readonly IRequestMapper _requestMapper = requestMapper;
-    private readonly IResponseMapper _responseMapper = responseMapper;
+
+    private readonly IAuthService _authService = authService;
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequestDTO request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Request from Angular SPA {user}", request.Username);
-        KCLoginRequestDTO kCLoginRequest = _requestMapper.ToKCLoginRequest(request);
-        KCLoginResponseDTO response = await _keycloak.Login(kCLoginRequest, cancellationToken);
+        TokenDTO token = await _authService.LoginAsync(request, cancellationToken);
 
-        return Ok(_responseMapper.ToTokenDTO(response));
+        return Ok(token);
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequestDTO request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Request from Angular SPA {user}", request.Username);
-        KCRegisterRequestDTO kCRegisterRequest = _requestMapper.ToKCRegisterRequest(request);
         try
         {
 
-            await _keycloak.Register(kCRegisterRequest, cancellationToken);
+            await _authService.RegisterAsync(request, cancellationToken);
             return Ok("Register success");
         }
         catch (Exception ex)
         {
-            _logger.LogTrace("{ex}", ex);
-            return BadRequest();
+            return BadRequest(ex.StackTrace);
         }
     }
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Request from Angular SPA with refresh token {refresh}", request.RefreshToken);
-        KCRefreshTokenRequest kCRefreshTokenRequest = _requestMapper.ToKCRefreshTokenRequest(request);
-        KCRefreshTokenResponseDTO kCRefreshTokenResponse = await _keycloak.RefreshToken(kCRefreshTokenRequest, cancellationToken);
-        TokenDTO tokenDTO = _responseMapper.ToTokenDTO(kCRefreshTokenResponse);
+
+        TokenDTO tokenDTO = await _authService.RefreshTokenAsync(request, cancellationToken);
         _logger.LogInformation("Refresh token sucess. New access {access}", tokenDTO.Access);
         return Ok(tokenDTO);
 
@@ -56,10 +50,15 @@ public class AuthController(IKeycloakClient keycloak, IRequestMapper requestMapp
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(LogoutRequestDTO request, CancellationToken cancellationToken)
     {
-        KCLogoutRequestDTO kCLogoutRequest = _requestMapper.ToKCLogoutRequest(request);
-        await _keycloak.Logout(kCLogoutRequest, cancellationToken);
-        _logger.LogInformation("Logout sucess");
-        return NoContent();
+        try
+        {
+            await _authService.LogoutAsync(request, cancellationToken);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.StackTrace);
+        }
 
     }
 
@@ -67,10 +66,8 @@ public class AuthController(IKeycloakClient keycloak, IRequestMapper requestMapp
     public async Task<IActionResult> GetUserInfo(CancellationToken cancellationToken)
     {
         string? authHeader = HttpContext.Request.Headers.Authorization.ToString();
-        _logger.LogInformation("Auth header {header}", authHeader);
         string token = authHeader.Split(" ", 2)[1];
-        _logger.LogInformation("Token {token}", token);
-        UserInfoResponseDTO userInfo = await _keycloak.GetUserInfoAsync(token, cancellationToken);
+        UserInfoResponseDTO userInfo = await _authService.GetUserDataAsync(token, cancellationToken);
         return Ok(userInfo);
 
 
@@ -80,14 +77,12 @@ public class AuthController(IKeycloakClient keycloak, IRequestMapper requestMapp
     {
         try
         {
-            await _keycloak.SendResetPasswordEmailAsync(request.Username, cancellationToken);
-            _logger.LogInformation("Reset password success, please check email");
+            await _authService.ResetPasswordAsync(request, cancellationToken);
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error {msg}", ex.Message);
-            return BadRequest("Invalid username");
+            return BadRequest(ex.StackTrace);
         }
 
     }

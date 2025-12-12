@@ -7,7 +7,7 @@ public interface IKeycloakClient
 {
     public Task<KCLoginResponseDTO> Login(KCLoginRequestDTO request, CancellationToken cancellationToken = default);
 
-    public Task Register(KCRegisterRequestDTO request, CancellationToken cancellationToken = default);
+    public Task<string> Register(KCRegisterRequestDTO request, CancellationToken cancellationToken = default);
 
     public Task<KCRefreshTokenResponseDTO> RefreshToken(KCRefreshTokenRequest request, CancellationToken cancellationToken = default);
 

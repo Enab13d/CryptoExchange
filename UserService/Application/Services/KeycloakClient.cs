@@ -91,7 +91,7 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         _logger.LogInformation("Logout sucess");
         return;
     }
-    public async Task Register(KCRegisterRequestDTO request, CancellationToken cancellationToken)
+    public async Task<string> Register(KCRegisterRequestDTO request, CancellationToken cancellationToken)
     {
         KCLoginResponseDTO admin = await GetAdminToken(cancellationToken);
         string json = JsonConvert.SerializeObject(request);
@@ -105,7 +105,13 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         HttpResponseMessage response = await _httpClient.SendAsync(message, cancellationToken);
         response.EnsureSuccessStatusCode();
         _logger.LogInformation("Register user response received. Status code {status}", response.StatusCode);
-        return;
+        // Extract the id from Location header
+        var location = response.Headers.Location?.ToString()
+            ?? throw new Exception("No Location header from Keycloak");
+
+        // Last segment is the user ID (same as sub claim)
+        string userId = location.Split('/').Last();
+        return userId;
 
     }
 
