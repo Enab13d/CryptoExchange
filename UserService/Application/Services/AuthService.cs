@@ -52,6 +52,8 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
 
     public async Task RegisterAsync(RegisterRequestDTO request, CancellationToken cancellationToken)
     {
+        User? userFromDb = await _userRepository.GetByEmailAsync(request.Email);
+        if (userFromDb is not null) throw new Exception("User with this email already exist");
         KCRegisterRequestDTO kCRegisterRequest = _requestMapper.ToKCRegisterRequest(request);
         try
         {
@@ -59,6 +61,7 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
             string userId = await _keycloak.Register(kCRegisterRequest, cancellationToken);
             User user = ModelToEnity.UserFromRegisterRequest(request);
             user.Id = userId;
+
             await _userRepository.InsertAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

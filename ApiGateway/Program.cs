@@ -38,9 +38,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         RoleClaimType = "role",
         ValidIssuer = jwtOptions.ValidIssuer,
-        ValidateIssuer = false,
+        ValidateIssuer = true,
         ValidAudience = jwtOptions.ValidAudience,
-        ValidateAudience = true
+        ValidateAudience = true,
+        ValidateLifetime = true
     };
 });
 

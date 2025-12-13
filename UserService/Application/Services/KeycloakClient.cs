@@ -1,16 +1,12 @@
 
 using System.Net.Http.Headers;
 using System.Text;
-using System.Web;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using SharedContracts;
 using UserService.Application.DTO.Requests;
 using UserService.Application.DTO.Responses;
 using UserService.Infrastructure.Configuration;
-using UserService.Application.Extensions;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 
 namespace UserService.Application.Services;
 
@@ -32,8 +28,8 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
             {"client_secret", _options.AdminClientSecret}
         });
         HttpResponseMessage responseMessage = await _httpClient.PostAsync($"/realms/{_options.RealmName}/protocol/openid-connect/token", body, cancellationToken);
-        responseMessage.EnsureSuccessStatusCode();
         _logger.LogInformation("GetAdminToken response received. Status code {status}", responseMessage.StatusCode);
+        responseMessage.EnsureSuccessStatusCode();
         string json = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         KCLoginResponseDTO? dto = JsonConvert.DeserializeObject<KCLoginResponseDTO>(json)
         ?? throw new Exception("Login response is null");
@@ -54,6 +50,7 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         HttpResponseMessage response = await _httpClient.PostAsync($"/realms/{_options.RealmName}/protocol/openid-connect/token", body, cancellationToken);
         response.EnsureSuccessStatusCode();
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
+
         KCLoginResponseDTO? dto = JsonConvert.DeserializeObject<KCLoginResponseDTO>(json)
         ?? throw new Exception("Login response is null");
 
@@ -103,6 +100,7 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
 
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", admin.AcessToken);
         HttpResponseMessage response = await _httpClient.SendAsync(message, cancellationToken);
+        _logger.LogInformation("Login response received {code}", response.StatusCode);
         response.EnsureSuccessStatusCode();
         _logger.LogInformation("Register user response received. Status code {status}", response.StatusCode);
         // Extract the id from Location header

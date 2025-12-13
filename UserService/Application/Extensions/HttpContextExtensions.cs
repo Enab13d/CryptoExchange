@@ -10,6 +10,7 @@ public static class HttpContextExtensions
     public static User UserFromClaims(this HttpContext ctx)
     {
         ClaimsPrincipal claims = ctx.User;
+        List<string> roles = [.. claims.FindAll("role").Select(c => c.Value)];
         User user = new()
         {
             UserId = claims.FindFirst("sub")?.Value ?? "",
@@ -17,6 +18,7 @@ public static class HttpContextExtensions
             FirstName = claims.FindFirst("given_name")?.Value ?? "",
             LastName = claims.FindFirst("family_name")?.Value ?? "",
             Email = claims.FindFirst("email")?.Value ?? "",
+            Roles = roles
         };
         return user;
     }

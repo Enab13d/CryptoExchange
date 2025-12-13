@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using SharedContracts;
 using UserService.Application.DTO.Requests;
 using UserService.Application.DTO.Responses;
+using UserService.Application.Extensions;
 using UserService.Application.Services;
 
 namespace UserService.Application.Controllers;
@@ -30,7 +32,7 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
         {
 
             await _authService.RegisterAsync(request, cancellationToken);
-            return Ok("Register success");
+            return Created();
         }
         catch (Exception ex)
         {
@@ -65,9 +67,10 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
     [HttpGet("user")]
     public async Task<IActionResult> GetUserInfo(CancellationToken cancellationToken)
     {
-        string? authHeader = HttpContext.Request.Headers.Authorization.ToString();
-        string token = authHeader.Split(" ", 2)[1];
-        UserInfoResponseDTO userInfo = await _authService.GetUserDataAsync(token, cancellationToken);
+        // string? authHeader = HttpContext.Request.Headers.Authorization.ToString();
+        // string token = authHeader.Split(" ", 2)[1];
+        // UserInfoResponseDTO userInfo = await _authService.GetUserDataAsync(token, cancellationToken);
+        User userInfo = HttpContext.UserFromClaims();
         return Ok(userInfo);
 
 

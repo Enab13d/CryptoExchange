@@ -12,6 +12,11 @@ public class UserRepository(UsersDbContext context) : IUserRepository
     public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken = default) =>
     await _context.Users.ToListAsync(cancellationToken);
 
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+    }
+
     public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
