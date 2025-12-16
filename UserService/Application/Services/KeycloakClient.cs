@@ -102,11 +102,10 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         HttpResponseMessage response = await _httpClient.SendAsync(message, cancellationToken);
         _logger.LogInformation("Login response received {code}", response.StatusCode);
         response.EnsureSuccessStatusCode();
-        _logger.LogInformation("Register user response received. Status code {status}", response.StatusCode);
         // Extract the id from Location header
         var location = response.Headers.Location?.ToString()
             ?? throw new Exception("No Location header from Keycloak");
-
+        string res = await response.Content.ReadAsStringAsync(cancellationToken);
         // Last segment is the user ID (same as sub claim)
         string userId = location.Split('/').Last();
         return userId;

@@ -24,6 +24,9 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
 
     public async Task<TokenDTO> LoginAsync(LoginRequestDTO request, CancellationToken cancellationToken)
     {
+        _ = await _userRepository.GetByEmailAsync(request.Username, cancellationToken)
+        ?? throw new BadHttpRequestException("Invalid credentials");
+
         KCLoginRequestDTO kCLoginRequest = _requestMapper.ToKCLoginRequest(request);
         KCLoginResponseDTO response = await _keycloak.Login(kCLoginRequest, cancellationToken);
         return _responseMapper.ToTokenDTO(response);
@@ -32,15 +35,7 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
     public async Task LogoutAsync(LogoutRequestDTO request, CancellationToken cancellationToken = default)
     {
         KCLogoutRequestDTO kCLogoutRequest = _requestMapper.ToKCLogoutRequest(request);
-        try
-        {
-            await _keycloak.Logout(kCLogoutRequest, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error processing logout request {err}", ex.Message);
-            throw;
-        }
+        await _keycloak.Logout(kCLogoutRequest, cancellationToken);
     }
 
     public async Task<TokenDTO> RefreshTokenAsync(RefreshTokenRequestDTO request, CancellationToken cancellationToken)
@@ -52,8 +47,8 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
 
     public async Task RegisterAsync(RegisterRequestDTO request, CancellationToken cancellationToken)
     {
-        User? userFromDb = await _userRepository.GetByEmailAsync(request.Email);
-        if (userFromDb is not null) throw new Exception("User with this email already exist");
+        User? userFromDb = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        if (userFromDb is not null) throw new BadHttpRequestException("User with this email already exist");
         KCRegisterRequestDTO kCRegisterRequest = _requestMapper.ToKCRegisterRequest(request);
         try
         {

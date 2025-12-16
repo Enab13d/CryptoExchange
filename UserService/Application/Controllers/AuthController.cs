@@ -28,21 +28,17 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
     public async Task<IActionResult> Register(RegisterRequestDTO request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Request from Angular SPA {user}", request.Username);
-        try
-        {
-
-            await _authService.RegisterAsync(request, cancellationToken);
-            return Created();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.StackTrace);
-        }
+        await _authService.RegisterAsync(request, cancellationToken);
+        return Created();
     }
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Request from Angular SPA with refresh token {refresh}", request.RefreshToken);
+        if (request.RefreshToken is null or "")
+        {
+            throw new BadHttpRequestException("refresh token is null or empty string");
+
+        }
 
         TokenDTO tokenDTO = await _authService.RefreshTokenAsync(request, cancellationToken);
         _logger.LogInformation("Refresh token sucess. New access {access}", tokenDTO.Access);
@@ -52,15 +48,8 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(LogoutRequestDTO request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _authService.LogoutAsync(request, cancellationToken);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.StackTrace);
-        }
+        await _authService.LogoutAsync(request, cancellationToken);
+        return NoContent();
 
     }
 

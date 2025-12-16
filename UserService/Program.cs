@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using UserService.Api.Middleware;
 using UserService.Application.Mappers;
 using UserService.Application.Services;
 using UserService.Domain.SeedWork;
@@ -64,5 +65,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.Run();
