@@ -118,11 +118,14 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: start-dev
+    command: start-dev --import-realm
     env_file:
       - .env
     volumes:
+      # Persistent Keycloak DB
       - keycloak-data:/opt/keycloak/data
+      # Realm import (read-only)
+      - ./keycloak:/opt/keycloak/data/import:ro
     ports:
       - 18080:8080
 

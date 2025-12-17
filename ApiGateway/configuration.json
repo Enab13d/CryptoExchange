@@ -22,10 +22,6 @@
           "Port": 5011
         }
       ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      },
       "UpstreamPathTemplate": "/refresh",
       "UpstreamHttpMethod": ["POST"],
       "RouteIsCaseSensitive": false
@@ -107,7 +103,7 @@
       },
 
       "RouteClaimsRequirement": {
-        "roles": ["manage-account"]
+        "roles": ["exchange-currency"]
       },
       "RouteIsCaseSensitive": false
     },
@@ -134,6 +130,12 @@
           "Port": 5007
         }
       ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "roles": ["exchange-currency"]
+      },
       "UpstreamHttpMethod": ["OPTIONS", "POST", "GET"]
     }
   ],

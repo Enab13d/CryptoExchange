@@ -78,13 +78,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = true
     };
 });
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(WorkflowAuthorizationPolicy.AdminPolicy,
-    policy => policy.RequireRole("admin"));
-    options.AddPolicy(WorkflowAuthorizationPolicy.UserPolicy, policy =>
-     policy.RequireRole("default-roles-ce-realm"));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(WorkflowAuthorizationPolicy.AdminPolicy, policy => policy.RequireRole("admin"))
+    .AddPolicy(WorkflowAuthorizationPolicy.UserPolicy, policy =>
+     policy.RequireRole("exchange-currency"));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

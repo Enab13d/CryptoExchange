@@ -29,6 +29,7 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         });
         HttpResponseMessage responseMessage = await _httpClient.PostAsync($"/realms/{_options.RealmName}/protocol/openid-connect/token", body, cancellationToken);
         _logger.LogInformation("GetAdminToken response received. Status code {status}", responseMessage.StatusCode);
+
         responseMessage.EnsureSuccessStatusCode();
         string json = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         KCLoginResponseDTO? dto = JsonConvert.DeserializeObject<KCLoginResponseDTO>(json)
