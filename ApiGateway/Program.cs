@@ -51,7 +51,11 @@ var app = builder.Build();
 app.UseWebSockets();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
-app.UseMiddleware<RequestClaimsMiddleware>();
+if (app.Environment.IsDevelopment())
+{
+    app.UseMiddleware<RequestClaimsMiddleware>();
+}
+
 app.UseAuthorization();
 await app.UseOcelot();
 await app.RunAsync();
