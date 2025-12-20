@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.DTO.Requests;
+using UserService.Application.Services.DTO;
 using UserService.Infrastructure.Configuration;
 
 namespace UserService.Application.Mappers;
@@ -7,9 +8,9 @@ namespace UserService.Application.Mappers;
 public class RequestMapper(IOptions<KeycloakOptions> options) : IRequestMapper
 {
     private readonly KeycloakOptions _options = options.Value;
-    public KCLoginRequestDTO ToKCLoginRequest(LoginRequestDTO request)
+    public KcLoginRequestDTO ToKcLoginRequest(LoginRequestDTO request)
     {
-        return new KCLoginRequestDTO()
+        return new KcLoginRequestDTO()
         {
             GrantType = "password",
             ClientId = _options.ClientId,
@@ -20,9 +21,9 @@ public class RequestMapper(IOptions<KeycloakOptions> options) : IRequestMapper
         };
     }
 
-    public KCLogoutRequestDTO ToKCLogoutRequest(LogoutRequestDTO request)
+    public KcLogoutRequestDTO ToKcLogoutRequest(LogoutRequestDTO request)
     {
-        return new KCLogoutRequestDTO
+        return new KcLogoutRequestDTO
         {
             ClientId = _options.ClientId,
             ClientSecret = _options.ClientSecret,
@@ -30,9 +31,9 @@ public class RequestMapper(IOptions<KeycloakOptions> options) : IRequestMapper
         };
     }
 
-    public KCRefreshTokenRequest ToKCRefreshTokenRequest(RefreshTokenRequestDTO request)
+    public KcRefreshTokenRequest ToKcRefreshTokenRequest(RefreshTokenRequestDTO request)
     {
-        return new KCRefreshTokenRequest()
+        return new KcRefreshTokenRequest()
         {
             GrantType = "refresh_token",
             ClientId = _options.ClientId,
@@ -41,9 +42,9 @@ public class RequestMapper(IOptions<KeycloakOptions> options) : IRequestMapper
         };
     }
 
-    public KCRegisterRequestDTO ToKCRegisterRequest(RegisterRequestDTO request)
+    public KcRegisterRequestDTO ToKcRegisterRequest(RegisterRequestDTO request)
     {
-        return new KCRegisterRequestDTO()
+        return new KcRegisterRequestDTO()
         {
             Username = request.Username,
             Email = request.Email,

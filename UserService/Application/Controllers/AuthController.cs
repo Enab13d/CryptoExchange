@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedContracts;
 using UserService.Application.DTO.Requests;
@@ -34,9 +35,9 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO request, CancellationToken cancellationToken)
     {
-        if (request.RefreshToken is null or "")
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
         {
-            throw new BadHttpRequestException("refresh token is null or empty string");
+            return Unauthorized("Refresh token is missing");
 
         }
 
@@ -52,7 +53,7 @@ public class AuthController(ILogger<AuthController> logger, IAuthService authSer
         return NoContent();
 
     }
-
+    [Authorize]
     [HttpGet("user")]
     public async Task<IActionResult> GetUserInfo(CancellationToken cancellationToken)
     {

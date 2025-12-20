@@ -1,16 +1,17 @@
 using UserService.Application.DTO.Requests;
+using UserService.Application.Services.DTO;
 
 namespace UserService.Application.Mappers;
 
 
 public interface IRequestMapper
 {
-    public KCLoginRequestDTO ToKCLoginRequest(LoginRequestDTO request);
+    public KcLoginRequestDTO ToKcLoginRequest(LoginRequestDTO request);
 
-    public KCRegisterRequestDTO ToKCRegisterRequest(RegisterRequestDTO request);
+    public KcRegisterRequestDTO ToKcRegisterRequest(RegisterRequestDTO request);
 
-    public KCRefreshTokenRequest ToKCRefreshTokenRequest(RefreshTokenRequestDTO request);
+    public KcRefreshTokenRequest ToKcRefreshTokenRequest(RefreshTokenRequestDTO request);
 
-    public KCLogoutRequestDTO ToKCLogoutRequest(LogoutRequestDTO request);
+    public KcLogoutRequestDTO ToKcLogoutRequest(LogoutRequestDTO request);
 
 };

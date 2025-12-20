@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using UserService.Application.DTO.Requests;
-using UserService.Application.DTO.Responses;
+using UserService.Application.Services.DTO;
 using UserService.Infrastructure.Configuration;
 
 
@@ -18,7 +18,8 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
 
     private readonly ILogger<KeycloakClient> _logger = logger;
 
-    private async Task<KCLoginResponseDTO> GetAdminToken(CancellationToken cancellationToken = default)
+    private const string ExecutionActionsEmailPath = "/admin/realms/{0}/users/{1}/execute-actions-email";
+    private async Task<KcLoginResponseDTO> GetAdminToken(CancellationToken cancellationToken = default)
     {
 
         var body = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -32,12 +33,12 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
 
         responseMessage.EnsureSuccessStatusCode();
         string json = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-        KCLoginResponseDTO? dto = JsonConvert.DeserializeObject<KCLoginResponseDTO>(json)
+        KcLoginResponseDTO? dto = JsonConvert.DeserializeObject<KcLoginResponseDTO>(json)
         ?? throw new Exception("Login response is null");
         return dto;
     }
 
-    public async Task<KCLoginResponseDTO> Login(KCLoginRequestDTO request, CancellationToken cancellationToken)
+    public async Task<KcLoginResponseDTO> Login(KcLoginRequestDTO request, CancellationToken cancellationToken)
     {
         FormUrlEncodedContent body = new(new Dictionary<string, string>()
         {
@@ -52,14 +53,14 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         response.EnsureSuccessStatusCode();
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        KCLoginResponseDTO? dto = JsonConvert.DeserializeObject<KCLoginResponseDTO>(json)
+        KcLoginResponseDTO? dto = JsonConvert.DeserializeObject<KcLoginResponseDTO>(json)
         ?? throw new Exception("Login response is null");
 
         return dto;
 
 
     }
-    public async Task<KCRefreshTokenResponseDTO> RefreshToken(KCRefreshTokenRequest request, CancellationToken cancellationToken = default)
+    public async Task<KcRefreshTokenResponseDTO> RefreshToken(KcRefreshTokenRequest request, CancellationToken cancellationToken = default)
     {
         FormUrlEncodedContent body = new(new Dictionary<string, string>()
         {
@@ -72,11 +73,11 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         HttpResponseMessage response = await _httpClient.PostAsync($"/realms/{_options.RealmName}/protocol/openid-connect/token", body, cancellationToken);
         response.EnsureSuccessStatusCode();
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        KCRefreshTokenResponseDTO? dto = JsonConvert.DeserializeObject<KCRefreshTokenResponseDTO>(json)
+        KcRefreshTokenResponseDTO? dto = JsonConvert.DeserializeObject<KcRefreshTokenResponseDTO>(json)
         ?? throw new Exception("Refresh token repsonse is null");
         return dto;
     }
-    public async Task Logout(KCLogoutRequestDTO request, CancellationToken cancellationToken = default)
+    public async Task Logout(KcLogoutRequestDTO request, CancellationToken cancellationToken = default)
     {
         FormUrlEncodedContent body = new(new Dictionary<string, string>()
         {
@@ -89,9 +90,9 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         _logger.LogInformation("Logout sucess");
         return;
     }
-    public async Task<string> Register(KCRegisterRequestDTO request, CancellationToken cancellationToken)
+    public async Task<string> Register(KcRegisterRequestDTO request, CancellationToken cancellationToken)
     {
-        KCLoginResponseDTO admin = await GetAdminToken(cancellationToken);
+        KcLoginResponseDTO admin = await GetAdminToken(cancellationToken);
         string json = JsonConvert.SerializeObject(request);
         StringContent content = new(json, Encoding.UTF8, "application/json");
         using HttpRequestMessage message = new(HttpMethod.Post, $"/admin/realms/{_options.RealmName}/users")
@@ -113,14 +114,14 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
 
     }
 
-    public async Task<UserInfoResponseDTO> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken = default)
+    public async Task<KcUserInfoResponseDTO> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken = default)
     {
         HttpRequestMessage message = new(HttpMethod.Get, $"/realms/{_options.RealmName}/protocol/openid-connect/userinfo");
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         HttpResponseMessage response = await _httpClient.SendAsync(message, cancellationToken);
         response.EnsureSuccessStatusCode();
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        UserInfoResponseDTO? userInfo = JsonConvert.DeserializeObject<UserInfoResponseDTO>(json)
+        KcUserInfoResponseDTO? userInfo = JsonConvert.DeserializeObject<KcUserInfoResponseDTO>(json)
         ?? throw new Exception("userInfo is null");
         return userInfo;
     }
@@ -128,26 +129,26 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
     public async Task SendResetPasswordEmailAsync(string username, CancellationToken cancellationToken)
     {
         //obtain admin acess token
-        KCLoginResponseDTO admin = await GetAdminToken(cancellationToken);
-        //prepare and send request to check if user exists in KC
+        KcLoginResponseDTO admin = await GetAdminToken(cancellationToken);
+        //prepare and send request to check if user exists in Kc
         using HttpRequestMessage request = new(HttpMethod.Get, $"/admin/realms/{_options.RealmName}/users?username={Uri.EscapeDataString(username)}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", admin.AcessToken);
         HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
         //check if user exist
         // var users = await response.Content.ReadFromJsonAsync<List<JsonElement>>(cancellationToken);
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
-        List<UserInfoResponseDTO>? users = JsonConvert.DeserializeObject<List<UserInfoResponseDTO>>(json);
+        List<KcUserInfoResponseDTO>? users = JsonConvert.DeserializeObject<List<KcUserInfoResponseDTO>>(json);
 
         if (users is null || users.Count == 0)
         {
             throw new KeyNotFoundException($"User with username {username} not found");
         }
         //extract user id from response
-        UserInfoResponseDTO user = users.First();
+        KcUserInfoResponseDTO user = users.First();
         //prepare and send reset password request
-        var resetUrl = $"/admin/realms/{_options.RealmName}/users/{user.Sub}/execute-actions-email" +
-                   $"?client_id={Uri.EscapeDataString(_options.ClientId)}" +
-                   $"&redirect_uri={Uri.EscapeDataString("http://localhost:4200")}";
+        var resetUrl = string.Format(ExecutionActionsEmailPath, _options.RealmName, user.Sub)
+        + $"?client_id={Uri.EscapeDataString(_options.ClientId)}"
+        + $"&redirect_uri={Uri.EscapeDataString("http://localhost:4200")}";
 
         using HttpRequestMessage resetPasswordRequest = new(HttpMethod.Put, resetUrl)
         {

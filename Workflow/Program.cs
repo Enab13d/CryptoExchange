@@ -68,7 +68,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 {
     options.Authority = jwtOptions.Authority;
     options.MapInboundClaims = false;
-    options.RequireHttpsMetadata = false; //dev only
+    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); //dev only
     options.TokenValidationParameters = new TokenValidationParameters
     {
         RoleClaimType = "role",

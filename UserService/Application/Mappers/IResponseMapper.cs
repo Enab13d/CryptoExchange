@@ -1,11 +1,12 @@
 using UserService.Application.DTO.Responses;
+using UserService.Application.Services.DTO;
 
 namespace UserService.Application.Mappers;
 
 
 public interface IResponseMapper
 {
-    public TokenDTO ToTokenDTO(KCLoginResponseDTO response);
+    public TokenDTO ToTokenDTO(KcLoginResponseDTO response);
 
-    public TokenDTO ToTokenDTO(KCRefreshTokenResponseDTO response);
+    public TokenDTO ToTokenDTO(KcRefreshTokenResponseDTO response);
 };

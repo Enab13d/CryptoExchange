@@ -11,9 +11,9 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options, IConfigura
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        string connectionString = _configuration.GetConnectionString("Users")
+        var connectionString = _configuration.GetConnectionString("Users")
         ?? Environment.GetEnvironmentVariable("PG_USERS_CONNECTION_STRING")
-        ?? "Host=postgres;Port=5432;Database=usersdb;Username=postgres;Password=postgres;";
+        ?? throw new InvalidOperationException("Users database connection string is not configured");
         optionsBuilder.UseNpgsql(connectionString);
     }
 
