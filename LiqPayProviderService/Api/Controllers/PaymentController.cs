@@ -12,13 +12,13 @@ namespace LiqPayProviderService.Api.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class PaymentController(IPublishEndpoint publishEndpoint, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, ILiqpayService liqpayService, ILogger<PaymentController> logger) : ControllerBase
+public class PaymentController(ISendEndpointProvider sendEndpointProvider, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, ILiqpayService liqpayService, ILogger<PaymentController> logger) : ControllerBase
 {
 
     private readonly ILiqpayService _liqpayService = liqpayService;
     private readonly IPaymentRepository _paymentRepository = paymentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+    private readonly ISendEndpointProvider _sendEndpointProvider = sendEndpointProvider;
     private readonly ILogger<PaymentController> _logger = logger;
     [HttpPost("callback")]
     public async Task<IActionResult> HandleLiqpayCallback(CancellationToken cancellationToken)
@@ -44,13 +44,14 @@ public class PaymentController(IPublishEndpoint publishEndpoint, IPaymentReposit
         await _paymentRepository.UpdateById(correlationId, paymentInfo.Status);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         Payment? payment = await _paymentRepository.GetByCorrelationId(correlationId) ?? throw new KeyNotFoundException($"Payment with id {correlationId} not found");
-        await _publishEndpoint.Publish(new FiatToCryptoResponseMessage()
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:liqpay-response-received"));
+        await endpoint.Send<FiatToCryptoResponseMessage>(new
         {
             CorrelationId = correlationId,
-            Crypto = payment.Crypto,
-            Fiat = payment.Fiat,
-            Amount = payment.Amount,
-            WalletAddress = payment.WalletAddress
+            payment.Crypto,
+            payment.Fiat,
+            payment.Amount,
+            payment.WalletAddress
         }, cancellationToken);
         return Ok("Callback processed successfully");
     }

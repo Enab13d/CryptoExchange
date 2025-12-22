@@ -36,7 +36,10 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["RabbitMQ:Username"]);
             h.Password(builder.Configuration["RabbitMQ:Password"]);
         });
-
+        cfg.ReceiveEndpoint("crypto-payout-requested", e =>
+        {
+            e.ConfigureConsumer<CryptoPayoutRequestedEventHandler>(context);
+        });
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });

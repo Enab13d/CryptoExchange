@@ -13,7 +13,9 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
 
     private readonly IPaymentRepository _paymentRepository;
 
-    private readonly IPublishEndpoint _publishEndpoint;
+
+
+    private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILiqpayService _liqpayService;
     private readonly ILogger<ProcessDepositCommandHandler> _logger;
@@ -23,7 +25,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
       IPaymentRepository paymentRepository,
       ILiqpayService liqpayService,
       IUnitOfWork unitOfWork,
-      IPublishEndpoint publishEndpoint
+      ISendEndpointProvider sendEndpointProvider
 
       )
     {
@@ -33,7 +35,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
         // inject http handler +
         _liqpayService = liqpayService;
         _unitOfWork = unitOfWork;
-        _publishEndpoint = publishEndpoint;
+        _sendEndpointProvider = sendEndpointProvider;
     }
 
     public async Task<PaymentDataDTO> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
@@ -73,7 +75,8 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
         paymentData.CorrelationId = command.CorrelationId;
         paymentData.PaymentId = command.PaymentId;
         // publish payment data to workflow
-        await _publishEndpoint.Publish(paymentData, cancellationToken);
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:form-data-received"));
+        await endpoint.Send(paymentData, cancellationToken);
 
         // Process deposit logic here
         _logger.LogInformation("Prepared LiqPay checkout data for CorrelationId: {CorrelationId}", command.CorrelationId);

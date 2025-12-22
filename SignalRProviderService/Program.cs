@@ -66,7 +66,9 @@ services.AddMassTransit(busRegistrationConfigurator =>
              h.Username(builder.Configuration["RabbitMQ:Username"] ?? throw new ArgumentException(""));
              h.Password(builder.Configuration["RabbitMQ:Password"] ?? throw new ArgumentException(""));
          });
-
+        cfg.ReceiveEndpoint("payment-data-prepared", e =>
+        e.ConfigureConsumer<PaymentDataPreparedEventHandler>(context)
+        );
         cfg.ConfigureEndpoints(context);
     });
 }

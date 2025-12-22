@@ -57,6 +57,17 @@ builder.Services.AddMassTransit(x =>
             h.Password(builder.Configuration["RabbitMQ:Password"]);
         });
 
+        cfg.ReceiveEndpoint("liqpay-response-received", e =>
+            e.ConfigureConsumer<LiqpayResponseReceivedEventHandler>(context)
+        );
+        cfg.ReceiveEndpoint("form-data-received", e =>
+        e.ConfigureConsumer<FormDataReceivedEventHandler>(context));
+
+        cfg.ReceiveEndpoint("websocket-connection-established", e =>
+        e.ConfigureConsumer<WebsocketConnectionEstablishedEventHandler>(context));
+
+        cfg.ReceiveEndpoint("payment-data-requested", e =>
+        e.ConfigureConsumer<PaymentDataRequestedEventHandler>(context));
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });

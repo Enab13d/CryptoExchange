@@ -6,15 +6,16 @@ using WorkflowCore.Models;
 namespace Workflow.Workflows.CryptoPayoutWorkflow.Steps;
 
 
-public class SendToBlockchainProviderStep(IPublishEndpoint publishEndpoint, ILogger<SendToBlockchainProviderStep> logger) : StepBodyAsync
+public class SendToBlockchainProviderStep(ISendEndpointProvider sendEndpointProvider, ILogger<SendToBlockchainProviderStep> logger) : StepBodyAsync
 {
-    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+    private readonly ISendEndpointProvider _sendEndpointProvider = sendEndpointProvider;
     private readonly ILogger<SendToBlockchainProviderStep> _logger = logger;
     public CryptoPayoutMessage Payload { get; set; } = default!;
     public override async Task<WorkflowCore.Models.ExecutionResult> RunAsync(IStepExecutionContext context)
     {
-        await _publishEndpoint.Publish(Payload);
-        _logger.LogInformation("Publishing payload from SendToBlockchainProviderStep: {address}, {crypto}", Payload.WalletAddress, Payload.Crypto);
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:crypto-payout-requested"));
+        await endpoint.Send(Payload);
+        _logger.LogInformation("Sending payload from SendToBlockchainProviderStep: {address}, {crypto}", Payload.WalletAddress, Payload.Crypto);
         return WorkflowCore.Models.ExecutionResult.Next();
 
     }

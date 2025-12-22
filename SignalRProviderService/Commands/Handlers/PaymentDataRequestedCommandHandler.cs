@@ -5,10 +5,9 @@ using SharedContracts;
 namespace SignalRProviderService.Commands.Handlers;
 
 
-public class PaymentDataRequestedCommandHandler(IPublishEndpoint publishEndpoint, ILogger<PaymentDataRequestedCommandHandler> logger) : IRequestHandler<PaymentDataRequestedCommand, PaymentDataRequestedMessage>
+public class PaymentDataRequestedCommandHandler(ISendEndpointProvider sendEndpointProvider, ILogger<PaymentDataRequestedCommandHandler> logger) : IRequestHandler<PaymentDataRequestedCommand, PaymentDataRequestedMessage>
 {
-
-    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+    private readonly ISendEndpointProvider _sendEndpointProvider = sendEndpointProvider;
     private readonly ILogger<PaymentDataRequestedCommandHandler> _logger = logger;
 
     public async Task<PaymentDataRequestedMessage> Handle(PaymentDataRequestedCommand request, CancellationToken cancellationToken)
@@ -18,8 +17,9 @@ public class PaymentDataRequestedCommandHandler(IPublishEndpoint publishEndpoint
             PaymentId = request.PaymentId,
             ConnectionId = request.ConnectionId
         };
-        _logger.LogInformation("Publishing PaymentDataRequestedMessage with PaymentId {PaymentId} ConnectionId {ConnectionId}", message.PaymentId, message.ConnectionId);
-        await _publishEndpoint.Publish(message, cancellationToken);
+        _logger.LogInformation("Sending PaymentDataRequestedMessage with PaymentId {PaymentId} ConnectionId {ConnectionId}", message.PaymentId, message.ConnectionId);
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:payment-data-requested"));
+        await endpoint.Send(message, cancellationToken);
         return message;
     }
 }

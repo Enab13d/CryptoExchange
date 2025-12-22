@@ -40,6 +40,12 @@ builder.Services.AddMassTransit(x =>
             h.Password(builder.Configuration["RabbitMQ:Password"]);
         });
 
+        cfg.ReceiveEndpoint("deposit-requested", e =>
+        {
+            e.ConfigureConsumer<DepositRequestedEventHandler>(context);
+        }
+        );
+
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });

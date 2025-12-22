@@ -12,7 +12,7 @@ public class WebsocketConnectionEstablishedEventHandler(IWorkflowHost workflowHo
     public async Task Consume(ConsumeContext<WebsocketConnectionMessage> context)
     {
         WebsocketConnectionMessage message = context.Message;
-        _logger.LogInformation("WebsocketConnectionEstablishedEvenyHandler: publishing event websocket-connection-established with payment id {id}", message.PaymentId);
+        _logger.LogInformation("WebsocketConnectionEstablishedEvenyHandler: sending event websocket-connection-established with payment id {id}", message.PaymentId);
         await _workflowHost.PublishEvent("websocket-connection-established", message.PaymentId.ToString(), message);
 
     }

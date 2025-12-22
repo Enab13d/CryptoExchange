@@ -8,12 +8,14 @@ namespace Workflow.Workflows.FiatOnRampWorkflow.Steps;
 
 public class SendToSignalRProviderStep : StepBodyAsync
 {
-    private readonly IPublishEndpoint _publishEndpoint;
+
+
+    private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly ILogger<SendToSignalRProviderStep> _logger;
 
-    public SendToSignalRProviderStep(IPublishEndpoint publishEndpoint, ILogger<SendToSignalRProviderStep> logger)
+    public SendToSignalRProviderStep(ISendEndpointProvider sendEndpointProvider, ILogger<SendToSignalRProviderStep> logger)
     {
-        _publishEndpoint = publishEndpoint;
+        _sendEndpointProvider = sendEndpointProvider;
         _logger = logger;
     }
     public FiatOnRampMessage Input
@@ -29,8 +31,9 @@ public class SendToSignalRProviderStep : StepBodyAsync
             Data = Input.PaymentData.Data,
             Signature = Input.PaymentData.Signature
         };
-        _logger.LogInformation("Publishing payload from SendToSignalRProviderStep: {data}, {signature}", message.Data, message.Signature);
-        await _publishEndpoint.Publish(message);
+        _logger.LogInformation("Sending payload from SendToSignalRProviderStep: {data}, {signature}", message.Data, message.Signature);
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:payment-data-prepared"));
+        await endpoint.Send(message);
         return WorkflowCore.Models.ExecutionResult.Next();
     }
 }
