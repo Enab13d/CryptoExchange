@@ -32,9 +32,8 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
 
 builder.Services.AddTransient<IWorkflowService, WorkflowService>();
-builder.Services.AddTransient<IWorkflow<FiatOnRampMessage>, FiatOnRampWorkflow>();
+builder.Services.AddTransient<IWorkflow<FiatOnRampRequested>, FiatOnRampWorkflow>();
 builder.Services.AddTransient<SendToLiqPayProviderStep>();
-builder.Services.AddTransient<SendToSignalRProviderStep>();
 
 builder.Services.AddTransient<IWorkflow<CryptoPayoutMessage>, CryptoPayoutWorkflow>();
 builder.Services.AddTransient<SendToBlockchainProviderStep>();
@@ -44,8 +43,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<LiqpayResponseReceivedEventHandler>();
     x.AddConsumer<FormDataReceivedEventHandler>();
-    x.AddConsumer<WebsocketConnectionEstablishedEventHandler>();
-    x.AddConsumer<PaymentDataRequestedEventHandler>();
+
 
     x.SetKebabCaseEndpointNameFormatter();
 
@@ -60,14 +58,7 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("liqpay-response-received", e =>
             e.ConfigureConsumer<LiqpayResponseReceivedEventHandler>(context)
         );
-        cfg.ReceiveEndpoint("form-data-received", e =>
-        e.ConfigureConsumer<FormDataReceivedEventHandler>(context));
 
-        cfg.ReceiveEndpoint("websocket-connection-established", e =>
-        e.ConfigureConsumer<WebsocketConnectionEstablishedEventHandler>(context));
-
-        cfg.ReceiveEndpoint("payment-data-requested", e =>
-        e.ConfigureConsumer<PaymentDataRequestedEventHandler>(context));
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });
@@ -127,7 +118,7 @@ app.MapControllers();
 var registry = app.Services.GetRequiredService<IWorkflowRegistry>();
 
 // Register your workflow
-var fiatOnRampWorkflow = app.Services.GetRequiredService<IWorkflow<FiatOnRampMessage>>();
+var fiatOnRampWorkflow = app.Services.GetRequiredService<IWorkflow<FiatOnRampRequested>>();
 var cryptoPayoutWorkflow = app.Services.GetRequiredService<IWorkflow<CryptoPayoutMessage>>();
 registry.RegisterWorkflow(fiatOnRampWorkflow);
 registry.RegisterWorkflow(cryptoPayoutWorkflow);

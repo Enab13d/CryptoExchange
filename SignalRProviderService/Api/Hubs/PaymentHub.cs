@@ -1,18 +1,18 @@
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using SharedContracts;
+using SignalRProviderService.Api.Extensions;
 using SignalRProviderService.Api.Interfaces;
-using SignalRProviderService.Commands;
 using SignalRProviderService.Infrastructure.Policies;
+using SignalRProviderService.Infrastructure.Repositories;
 
 namespace SignalRProviderService.Api.Hubs;
 
 [Authorize(Policy = SignalRProviderAuthorizationPolicy.UserPolicy)]
-public class PaymentHub(IMediator mediator, ILogger<PaymentHub> logger) : Hub<IPaymentClient>
+public class PaymentHub(ILogger<PaymentHub> logger, IPaymentDataRepository paymentDataRepository) : Hub<IPaymentClient>
 {
-    private readonly IMediator _mediator = mediator;
+
     private readonly ILogger<PaymentHub> _logger = logger;
+    private readonly IPaymentDataRepository _paymentDataRepository = paymentDataRepository;
     public async Task JoinHubGroup(string paymentId)
     {
 
@@ -21,26 +21,30 @@ public class PaymentHub(IMediator mediator, ILogger<PaymentHub> logger) : Hub<IP
         await Groups.AddToGroupAsync(Context.ConnectionId, paymentId);
 
         // await Clients.Group(paymentId).ReceiveConnectionMessage($"{Context.ConnectionId}");
-        JoinHubGroupCommand command = new()
-        {
-            ConnectionId = Context.ConnectionId,
-            PaymentId = paymentId
-        };
-        await _mediator.Send(command);
+
 
     }
     public async Task SendPaymentData(string paymentId)
     {
         _logger.LogInformation("Send Payment data command procedure invoked by client with paymentID {paymentId}", paymentId);
-        PaymentDataRequestedCommand command = new()
-        {
-            ConnectionId = Context.ConnectionId,
-            PaymentId = paymentId
-        };
-        await _mediator.Send(command);
+
+
+        var paymentData = await _paymentDataRepository.GetAsync(paymentId) ?? throw new InvalidOperationException($"Payment data with cacheKey {paymentId} not found");
+        //then extract payment data and 
+        await Clients.Group(paymentId)
+        .ReceivePaymentFormData(paymentData);
+        _logger.LogInformation("Sent payment data to client group with paymentId {id}", paymentId);
+        await _paymentDataRepository.RemoveAsync(paymentId);
+
+
     }
 
-
+    public override Task OnConnectedAsync()
+    {
+        var user = Context.UserFromClaims();
+        if (user is not null) _logger.LogInformation("User {id} connected to hub", user.UserId);
+        return base.OnConnectedAsync();
+    }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {

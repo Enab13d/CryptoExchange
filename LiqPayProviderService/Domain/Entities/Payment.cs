@@ -21,7 +21,7 @@ public class Payment
 
     public string WalletAddress { get; set; } = default!;
 
-    public User User { get; set; } = default!;
+    public string UserId { get; set; } = default!;
 
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; init; }

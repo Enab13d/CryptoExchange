@@ -5,17 +5,12 @@ using WorkflowCore.Models;
 
 namespace Workflow.Workflows.FiatOnRampWorkflow.Steps
 {
-    public class SendToLiqPayProviderStep : StepBodyAsync
+    public class SendToLiqPayProviderStep(ISendEndpointProvider sendEndpointProvider) : StepBodyAsync
     {
 
-        private readonly ISendEndpointProvider _sendEndpointProvider;
+        private readonly ISendEndpointProvider _sendEndpointProvider = sendEndpointProvider;
 
-        public SendToLiqPayProviderStep(ISendEndpointProvider sendEndpointProvider)
-        {
-            _sendEndpointProvider = sendEndpointProvider;
-        }
-
-        public FiatOnRampMessage Payload { get; set; } = default!;
+        public FiatOnRampRequested Payload { get; set; } = default!;
 
         public override async Task<WorkflowCore.Models.ExecutionResult> RunAsync(IStepExecutionContext context)
         {

@@ -22,12 +22,11 @@ namespace Workflow.Controllers
             Guid correlationId = Guid.NewGuid();
             User user = HttpContext.UserFromClaims();
 
-            await _workflowService.StartFiatOnRampWorkflowAsync(new FiatOnRampMessage
+            await _workflowService.StartFiatOnRampWorkflowAsync(new FiatOnRampRequested
             {
                 Fiat = deposit.Currency,
                 Crypto = deposit.Crypto,
                 Amount = deposit.Amount,
-                Currency = deposit.Currency,
                 Description = deposit.Description,
                 Phone = deposit.Phone,
                 CreatedAt = DateTime.Now,
@@ -35,7 +34,7 @@ namespace Workflow.Controllers
                 CorrelationId = correlationId,
                 OrderId = correlationId,
                 WalletAddress = deposit.WalletAddress,
-                User = user
+                UserId = user.UserId
 
             });
             var response = new

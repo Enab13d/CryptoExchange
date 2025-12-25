@@ -5,16 +5,16 @@ using SharedContracts;
 using SignalRProviderService.Api.Hubs;
 using SignalRProviderService.Api.Interfaces;
 
-namespace SignalRProviderService.IntegrationEvents.Handlers;
+namespace SignalRProviderService.Api.Commands.Handlers;
 
 
-public class PaymentDataPreparedEventHandler(IHubContext<PaymentHub, IPaymentClient> hubContext, ILogger<PaymentDataPreparedEventHandler> logger) : IConsumer<PreparedFormDataMessage>
+public class PaymentDataPreparedEventHandler(IHubContext<PaymentHub, IPaymentClient> hubContext, ILogger<PaymentDataPreparedEventHandler> logger) : IConsumer<PaymentDataDTO>
 {
     private readonly IHubContext<PaymentHub, IPaymentClient> _hubContext = hubContext;
     private readonly ILogger<PaymentDataPreparedEventHandler> _logger = logger;
-    public async Task Consume(ConsumeContext<PreparedFormDataMessage> context)
+    public async Task Consume(ConsumeContext<PaymentDataDTO> context)
     {
-        PreparedFormDataMessage paymentData = context.Message;
+        PaymentDataDTO paymentData = context.Message;
 
         //send data to specific client
         //message contain the method name "ReceivePaymentFormData" that should be invoked on the client

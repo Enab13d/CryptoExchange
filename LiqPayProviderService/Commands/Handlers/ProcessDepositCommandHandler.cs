@@ -4,39 +4,26 @@ using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Services;
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using SharedContracts;
 
 namespace LiqPayProviderService.Commands.Handlers;
 
-public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositCommand, PaymentDataDTO>
+public class ProcessDepositCommandHandler(
+  ILogger<ProcessDepositCommandHandler> logger,
+  IPaymentRepository paymentRepository,
+  ILiqpayService liqpayService,
+  IUnitOfWork unitOfWork,
+  IPublishEndpoint publishEndpoint,
+  IDistributedCache cache
+      ) : IRequestHandler<ProcessDepositCommand, PaymentDataDTO>
 {
-
-    private readonly IPaymentRepository _paymentRepository;
-
-
-
-    private readonly ISendEndpointProvider _sendEndpointProvider;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILiqpayService _liqpayService;
-    private readonly ILogger<ProcessDepositCommandHandler> _logger;
-
-    public ProcessDepositCommandHandler
-    (ILogger<ProcessDepositCommandHandler> logger,
-      IPaymentRepository paymentRepository,
-      ILiqpayService liqpayService,
-      IUnitOfWork unitOfWork,
-      ISendEndpointProvider sendEndpointProvider
-
-      )
-    {
-        _logger = logger;
-        // Inject IRepository interface +
-        _paymentRepository = paymentRepository;
-        // inject http handler +
-        _liqpayService = liqpayService;
-        _unitOfWork = unitOfWork;
-        _sendEndpointProvider = sendEndpointProvider;
-    }
+    private readonly IPaymentRepository _paymentRepository = paymentRepository;
+    private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ILiqpayService _liqpayService = liqpayService;
+    private readonly ILogger<ProcessDepositCommandHandler> _logger = logger;
+    private readonly IDistributedCache _cache = cache;
 
     public async Task<PaymentDataDTO> Handle(ProcessDepositCommand command, CancellationToken cancellationToken)
     {
@@ -54,7 +41,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             CreatedAt = timestamp,
             UpdatedAt = timestamp,
             WalletAddress = command.WalletAddress,
-            User = command.User
+            UserId = command.UserId
 
         }, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -74,9 +61,22 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
         PaymentDataDTO paymentData = _liqpayService.PreparePaymentData(deposit);
         paymentData.CorrelationId = command.CorrelationId;
         paymentData.PaymentId = command.PaymentId;
+
+        var cacheKey = $"payment-form:{paymentData.PaymentId}";
+        var json = System.Text.Json.JsonSerializer.Serialize(paymentData);
+        //save payment data to cache so that signalr can retrieve it later
+        await _cache.SetStringAsync(
+            cacheKey,
+             json, new DistributedCacheEntryOptions
+             {
+                 //set ttl to 5 mins
+                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+             },
+             cancellationToken
+            );
+
         // publish payment data to workflow
-        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:form-data-received"));
-        await endpoint.Send(paymentData, cancellationToken);
+        await _publishEndpoint.Publish(paymentData, cancellationToken);
 
         // Process deposit logic here
         _logger.LogInformation("Prepared LiqPay checkout data for CorrelationId: {CorrelationId}", command.CorrelationId);

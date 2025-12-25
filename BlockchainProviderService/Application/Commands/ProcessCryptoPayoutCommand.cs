@@ -1,5 +1,4 @@
 using MediatR;
-using SharedContracts;
 using SharedContracts.Constants;
 
 namespace BlockchainProviderService.Application.Commands;

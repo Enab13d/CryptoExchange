@@ -2,17 +2,18 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SignalRProviderService.Api.Commands.Handlers;
 using SignalRProviderService.Api.Hubs;
-using SignalRProviderService.Commands;
 using SignalRProviderService.Infrastructure.Configuration;
 using SignalRProviderService.Infrastructure.Policies;
-using SignalRProviderService.IntegrationEvents.Handlers;
+using SignalRProviderService.Infrastructure.Repositories;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
 
 services.AddOpenApi();
+services.AddScoped<IPaymentDataRepository, PaymentDataRepository>();
 JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
 .Get<JwtOptions>() ?? throw new InvalidOperationException("JWT options not defined");
 
@@ -54,7 +55,6 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(SignalRProviderAuthorizationPolicy.UserPolicy, policy =>
      policy.RequireRole("exchange-currency"));
 services.AddSignalR();
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<JoinHubGroupCommand>());
 services.AddMassTransit(busRegistrationConfigurator =>
 {
     busRegistrationConfigurator.AddConsumer<PaymentDataPreparedEventHandler>();
@@ -66,14 +66,18 @@ services.AddMassTransit(busRegistrationConfigurator =>
              h.Username(builder.Configuration["RabbitMQ:Username"] ?? throw new ArgumentException(""));
              h.Password(builder.Configuration["RabbitMQ:Password"] ?? throw new ArgumentException(""));
          });
-        cfg.ReceiveEndpoint("payment-data-prepared", e =>
-        e.ConfigureConsumer<PaymentDataPreparedEventHandler>(context)
-        );
+
         cfg.ConfigureEndpoints(context);
     });
 }
 );
 
+
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName = "exchange:";
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

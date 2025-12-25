@@ -1,5 +1,8 @@
-public enum DepositStatus
+namespace SharedContracts
 {
-    Success,
-    Failure
+    public enum DepositStatus
+    {
+        Success,
+        Failure
+    }
 }
