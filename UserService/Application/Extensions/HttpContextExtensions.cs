@@ -10,7 +10,7 @@ public static class HttpContextExtensions
     public static User UserFromClaims(this HttpContext ctx)
     {
         ClaimsPrincipal claims = ctx.User;
-        List<string> roles = [.. claims.FindAll("role").Select(c => c.Value)];
+        List<string> roles = claims.FindAll("role").Select(c => c.Value).ToList();
         User user = new()
         {
             UserId = claims.FindFirst("sub")?.Value ?? "",

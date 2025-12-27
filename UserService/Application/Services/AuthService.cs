@@ -1,20 +1,21 @@
+using Microsoft.Extensions.Options;
 using UserService.Application.DTO.Requests;
 using UserService.Application.DTO.Responses;
-using UserService.Application.Mappers;
+using UserService.Application.Extensions;
 using UserService.Application.Services.DTO;
 using UserService.Domain.Entities;
 using UserService.Domain.SeedWork;
+using UserService.Infrastructure.Configuration;
 using UserService.Infrastructure.Repositories;
 
 namespace UserService.Application.Services;
 
-public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper, IResponseMapper responseMapper, ILogger<AuthService> logger, IUserRepository userRepository, IUnitOfWork unitOfWork) : IAuthService
+public class AuthService(IKeycloakClient keycloak, ILogger<AuthService> logger, IUserRepository userRepository, IUnitOfWork unitOfWork, IOptions<KeycloakOptions> options) : IAuthService
 {
     private readonly IKeycloakClient _keycloak = keycloak;
-    private readonly IRequestMapper _requestMapper = requestMapper;
-    private readonly IResponseMapper _responseMapper = responseMapper;
     private readonly IUserRepository _userRepository = userRepository;
 
+    private readonly KeycloakOptions _options = options.Value;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILogger<AuthService> _logger = logger;
     public async Task<KcUserInfoResponseDTO> GetUserDataAsync(string accessToken, CancellationToken cancellationToken = default)
@@ -28,34 +29,34 @@ public class AuthService(IKeycloakClient keycloak, IRequestMapper requestMapper,
         _ = await _userRepository.GetByEmailAsync(request.Username, cancellationToken)
         ?? throw new BadHttpRequestException("Invalid credentials");
 
-        KcLoginRequestDTO kCLoginRequest = _requestMapper.ToKcLoginRequest(request);
+        KcLoginRequestDTO kCLoginRequest = request.ToKcLoginRequest(_options);
         var response = await _keycloak.Login(kCLoginRequest, cancellationToken);
-        return _responseMapper.ToTokenDTO(response);
+        return response.ToTokenDTO();
     }
 
     public async Task LogoutAsync(LogoutRequestDTO request, CancellationToken cancellationToken = default)
     {
-        KcLogoutRequestDTO kCLogoutRequest = _requestMapper.ToKcLogoutRequest(request);
+        KcLogoutRequestDTO kCLogoutRequest = request.ToKcLogoutRequest(_options);
         await _keycloak.Logout(kCLogoutRequest, cancellationToken);
     }
 
     public async Task<TokenDTO> RefreshTokenAsync(RefreshTokenRequestDTO request, CancellationToken cancellationToken)
     {
-        KcRefreshTokenRequest kCRefreshTokenRequest = _requestMapper.ToKcRefreshTokenRequest(request);
+        KcRefreshTokenRequest kCRefreshTokenRequest = request.ToKcRefreshTokenRequest(_options);
         KcRefreshTokenResponseDTO kCRefreshTokenResponse = await _keycloak.RefreshToken(kCRefreshTokenRequest, cancellationToken);
-        return _responseMapper.ToTokenDTO(kCRefreshTokenResponse);
+        return kCRefreshTokenResponse.ToTokenDTO();
     }
 
     public async Task RegisterAsync(RegisterRequestDTO request, CancellationToken cancellationToken)
     {
         var userFromDb = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (userFromDb is not null) throw new BadHttpRequestException("User with this email already exist");
-        KcRegisterRequestDTO kCRegisterRequest = _requestMapper.ToKcRegisterRequest(request);
+        KcRegisterRequestDTO kCRegisterRequest = request.ToKcRegisterRequest();
         try
         {
 
             string userId = await _keycloak.Register(kCRegisterRequest, cancellationToken);
-            User user = ModelToEnity.UserFromRegisterRequest(request);
+            User user = request.ToUser();
             user.Id = userId;
 
             await _userRepository.InsertAsync(user, cancellationToken);
