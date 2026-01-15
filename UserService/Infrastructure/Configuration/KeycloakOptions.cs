@@ -12,4 +12,5 @@ public class KeycloakOptions
     public string ClientSecret { get; set; } = string.Empty;
     public string AdminClientId { get; set; } = string.Empty;
     public string AdminClientSecret { get; set; } = string.Empty;
+    public string RedirectUri { get; set; } = string.Empty;
 }

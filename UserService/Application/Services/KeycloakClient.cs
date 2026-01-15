@@ -148,7 +148,7 @@ public class KeycloakClient(HttpClient httpClient, IOptions<KeycloakOptions> opt
         //prepare and send reset password request
         var resetUrl = string.Format(ExecutionActionsEmailPath, _options.RealmName, user.Sub)
         + $"?client_id={Uri.EscapeDataString(_options.ClientId)}"
-        + $"&redirect_uri={Uri.EscapeDataString("http://localhost:4200")}";
+        + $"&redirect_uri={Uri.EscapeDataString(_options.RedirectUri)}";
 
         using HttpRequestMessage resetPasswordRequest = new(HttpMethod.Put, resetUrl)
         {
