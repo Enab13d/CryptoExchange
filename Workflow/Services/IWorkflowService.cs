@@ -4,7 +4,7 @@ namespace Workflow.Services
 {
     public interface IWorkflowService
     {
-        Task StartFiatOnRampWorkflowAsync(FiatOnRampMessage payload);
+        Task StartFiatOnRampWorkflowAsync(FiatOnRampRequested payload);
 
         Task StartCryptoPayoutWorkflow(CryptoPayoutMessage payload);
     }

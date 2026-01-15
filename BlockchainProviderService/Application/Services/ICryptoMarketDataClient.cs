@@ -1,4 +1,3 @@
-using BlockchainProviderService.Domain.Entities;
 using SharedContracts.Constants;
 
 namespace BlockchainProviderService.Application.Services;

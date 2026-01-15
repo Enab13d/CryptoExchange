@@ -1,16 +1,89 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/swagger/index.html",
+      "DownstreamPathTemplate": "/api/auth/login",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "workflow",
-          "Port": 5004
+          "Host": "userservice",
+          "Port": 5011
         }
       ],
-      "UpstreamPathTemplate": "/swagger/workflow",
+      "UpstreamPathTemplate": "/login",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/refresh",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/refresh",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/logout",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/logout",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/user",
       "UpstreamHttpMethod": ["GET"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/register",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/reset-password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/reset-password",
+      "UpstreamHttpMethod": ["POST"],
       "RouteIsCaseSensitive": false
     },
     {
@@ -24,6 +97,14 @@
       ],
       "UpstreamPathTemplate": "/exchange",
       "UpstreamHttpMethod": ["POST"],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+
+      "RouteClaimsRequirement": {
+        "roles": ["exchange-currency"]
+      },
       "RouteIsCaseSensitive": false
     },
     {
@@ -49,6 +130,12 @@
           "Port": 5007
         }
       ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "roles": ["exchange-currency"]
+      },
       "UpstreamHttpMethod": ["OPTIONS", "POST", "GET"]
     }
   ],

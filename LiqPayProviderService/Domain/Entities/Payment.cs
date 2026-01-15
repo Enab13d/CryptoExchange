@@ -1,6 +1,7 @@
 using LiqPayProviderService.Domain.Constants;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using SharedContracts;
 using SharedContracts.Constants;
 
 namespace LiqPayProviderService.Domain.Entities;
@@ -10,7 +11,6 @@ public class Payment
     public ObjectId Id { get; set; }
     public Guid OrderId { get; init; }
     public Guid CorrelationId { get; set; }
-    public Guid UserId { get; set; }
 
     public Guid PaymentId { get; init; }
     public decimal Amount { get; set; }
@@ -20,6 +20,8 @@ public class Payment
     public PaymentStatus Status { get; set; }
 
     public string WalletAddress { get; set; } = default!;
+
+    public string UserId { get; set; } = default!;
 
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; init; }

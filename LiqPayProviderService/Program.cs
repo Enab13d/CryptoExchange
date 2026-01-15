@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.Configure<LiqPayOptions>(builder.Configuration.GetSection(nameof(LiqPayOptions)));
 builder.Services.Configure<WebhookOptions>(builder.Configuration.GetSection(nameof(WebhookOptions)));
 string? mongoConnectionString = builder.Configuration.GetConnectionString("MongoConnection" ?? throw new InvalidOperationException("mongoConnectionString missing"));
@@ -40,6 +41,12 @@ builder.Services.AddMassTransit(x =>
             h.Password(builder.Configuration["RabbitMQ:Password"]);
         });
 
+        cfg.ReceiveEndpoint("deposit-requested", e =>
+        {
+            e.ConfigureConsumer<DepositRequestedEventHandler>(context);
+        }
+        );
+
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });
@@ -61,6 +68,13 @@ builder.Services.AddSwaggerGen(options =>
 }
 
 );
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName = "exchange:";
+});
+
 
 var app = builder.Build();
 

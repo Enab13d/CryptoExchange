@@ -6,17 +6,17 @@ namespace LiqPayProviderService.Commands;
 
 public record ProcessDepositCommand : IRequest<PaymentDataDTO>
 {
-    public Guid CorrelationId { get; init; }
-    public Guid Id { get; init; }
+        public Guid CorrelationId { get; init; }
+        public Guid PaymentId { get; init; }
+        public Guid OrderId { get; init; }
+        public decimal Amount { get; init; }
+        public Currency Fiat { get; init; }
+        public Crypto Crypto { get; init; }
 
-    public Guid PaymentId { get; init; }
-    public Currency Fiat { get; set; }
-    public Crypto Crypto { get; set; }
-    public decimal Amount { get; init; }
-    // інші поля
+        public string Description { get; set; } = string.Empty;
 
-    public string WalletAddress { get; set; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
-    public Guid OrderId { get; init; }
-    public string Phone { get; init; } = string.Empty;
+        public string WalletAddress { get; init; } = string.Empty;
+        public string UserId { get; init; } = string.Empty;
+        public string Phone { get; init; } = string.Empty;
+        public DateTime CreatedAt { get; init; }
 }
