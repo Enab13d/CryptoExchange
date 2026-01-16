@@ -11,9 +11,8 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options, IConfigura
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var connectionString = _configuration.GetConnectionString("Users")
-        ?? Environment.GetEnvironmentVariable("PG_USERS_CONNECTION_STRING")
-        ?? throw new InvalidOperationException("Users database connection string is not configured");
+        var connectionString = _configuration.GetConnectionString("UsersDb") ??
+        throw new InvalidOperationException("Users database connection string is not configured");
         optionsBuilder.UseNpgsql(connectionString);
     }
 
