@@ -1,8 +1,10 @@
-# Use official Keycloak image (do NOT use latest in prod)
-FROM quay.io/keycloak/keycloak:25.0.2
+FROM quay.io/keycloak/keycloak:latest
 
-# Copy your realm export into the import folder
+
+# ===== Realm import =====
 COPY realm-export.json /opt/keycloak/data/import/
 
-# Use entrypoint that imports the realm
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--import-realm", "--optimized"]
+# ===== Build optimized Keycloak =====
+RUN /opt/keycloak/bin/kc.sh build --db=postgres
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized", "--import-realm"]

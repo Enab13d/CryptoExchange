@@ -6,18 +6,21 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string configurationPath = builder.Environment.IsDevelopment() ? "configuration.json" : "configuration.prod.json";
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("configuration.json", optional: false, reloadOnChange: true);
+    .AddJsonFile(configurationPath, optional: false, reloadOnChange: true);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.AddOcelot(builder.Configuration);
 builder.Services.AddSignalR();
 string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(allowedOrigins!)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()

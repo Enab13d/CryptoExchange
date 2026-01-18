@@ -1,0 +1,145 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/login",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/refresh",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/refresh",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/logout",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/logout",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/user",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/user",
+      "UpstreamHttpMethod": ["GET"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/register",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/reset-password",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5011
+        }
+      ],
+      "UpstreamPathTemplate": "/reset-password",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/exchange",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "workflow.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/exchange",
+      "UpstreamHttpMethod": ["POST"],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+
+      "RouteClaimsRequirement": {
+        "roles": ["exchange-currency"]
+      },
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/payment/callback",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "liqpayproviderservice.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/payment/callback",
+      "UpstreamHttpMethod": ["POST"],
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/hub/{route}",
+      "UpstreamPathTemplate": "/hub/{route}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "signalrproviderservice.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Port": 5007
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RouteClaimsRequirement": {
+        "roles": ["exchange-currency"]
+      },
+      "UpstreamHttpMethod": ["OPTIONS", "POST", "GET"]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://api-gateway.wittyflower-582530cd.polandcentral.azurecontainerapps.io"
+  }
+}
