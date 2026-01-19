@@ -2,11 +2,11 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/login",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/login",
@@ -15,11 +15,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/auth/refresh",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/refresh",
@@ -28,11 +28,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/auth/logout",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "AuthenticationOptions": {
@@ -45,11 +45,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/auth/user",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "AuthenticationOptions": {
@@ -62,11 +62,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/auth/register",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/register",
@@ -75,11 +75,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/auth/reset-password",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-service.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
-          "Port": 5011
+          "Host": "user-service",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/reset-password",
@@ -88,10 +88,10 @@
     },
     {
       "DownstreamPathTemplate": "/api/exchange",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "workflow.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Host": "workflow",
           "Port": 5004
         }
       ],
@@ -109,10 +109,10 @@
     },
     {
       "DownstreamPathTemplate": "/api/payment/callback",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "liqpayproviderservice.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Host": "liqpayproviderservice",
           "Port": 8080
         }
       ],
@@ -126,7 +126,7 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "signalrproviderservice.internal.wittyflower-582530cd.polandcentral.azurecontainerapps.io",
+          "Host": "signalrproviderservice",
           "Port": 5007
         }
       ],
@@ -140,6 +140,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://api-gateway.wittyflower-582530cd.polandcentral.azurecontainerapps.io"
+    "BaseUrl": "https://api-gateway"
   }
 }

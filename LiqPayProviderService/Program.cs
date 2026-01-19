@@ -7,7 +7,6 @@ using LiqPayProviderService.IntegrationEvents.Handlers;
 using LiqPayProviderService.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,13 +26,15 @@ builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
 });
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProcessDepositCommand>());
 
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DepositRequestedEventHandler>();
 
     x.SetKebabCaseEndpointNameFormatter();
-
-    x.UsingRabbitMq((context, cfg) =>
+    if (builder.Environment.IsDevelopment())
+    {
+        x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
         {
@@ -50,24 +51,30 @@ builder.Services.AddMassTransit(x =>
         // Configure endpoints here if needed
         cfg.ConfigureEndpoints(context);
     });
+    }
+    else
+    {
+        x.UsingAzureServiceBus((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+
+            cfg.ReceiveEndpoint("deposit-requested", e =>
+            {
+                e.ConfigureConsumer<DepositRequestedEventHandler>(context);
+            });
+
+            cfg.ConfigureEndpoints(context);
+
+        });
+    }
+
 });
 
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc(name: "v1", new OpenApiInfo
-    {
-        Title = "Liqpay payment provider",
-        Version = "v1",
-        Description = "Processing payment requests"
-    });
 
-}
-
-);
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -79,14 +86,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    });
-}
 
 app.UseHttpsRedirection();
 
