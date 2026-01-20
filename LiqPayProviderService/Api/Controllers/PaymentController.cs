@@ -43,7 +43,7 @@ public class PaymentController(ISendEndpointProvider sendEndpointProvider, IPaym
         Guid correlationId = Guid.Parse(paymentInfo.OrderId);
         await _paymentRepository.UpdateById(correlationId, paymentInfo.Status);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        Payment? payment = await _paymentRepository.GetByCorrelationId(correlationId) ?? throw new KeyNotFoundException($"Payment with id {correlationId} not found");
+        Payment? payment = await _paymentRepository.GetByCorrelationId(correlationId, cancellationToken) ?? throw new KeyNotFoundException($"Payment with id {correlationId} not found");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:liqpay-response-received"));
         await endpoint.Send<FiatToCryptoResponseMessage>(new
         {

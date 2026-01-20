@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using LiqPayProviderService.Domain;
 using LiqPayProviderService.Domain.Constants;
 using LiqPayProviderService.Domain.Entities;
 using LiqPayProviderService.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
 
 namespace LiqPayProviderService.Infrastructure.Repositories;
 
@@ -18,10 +16,6 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
         return await _context.Payments.ToListAsync(cancellationToken);
     }
 
-    public Payment? GetById(ObjectId id, CancellationToken cancellationToken = default)
-    {
-        return _context.Payments.FirstOrDefault(e => e.Id == id);
-    }
     public async Task<Payment?> GetByCorrelationId(Guid correlationId, CancellationToken cancellationToken = default)
     {
         return await _context.Payments.FirstOrDefaultAsync(e => e.CorrelationId == correlationId, cancellationToken);

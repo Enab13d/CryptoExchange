@@ -1,5 +1,4 @@
 using LiqPayProviderService.Domain.Constants;
-using MongoDB.Bson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -11,7 +10,7 @@ public class PaymentInfo
     //has the shape of liqpay callback response data
 
     [JsonIgnore]
-    public ObjectId Id { get; set; }
+    public string Id { get; set; } = default!;
     [JsonProperty("acq_id")]
     public string? AcquirerID { get; set; }
 

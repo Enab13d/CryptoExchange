@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Azure.Cosmos;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using SharedContracts;
 using Workflow.Infrastructure.Configuration;
 using Workflow.Infrastructure.Policies;
@@ -19,17 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
-var mongoConn = builder.Configuration["Mongo:ConnectionString"] ?? throw new InvalidOperationException("Missing Mongo connection string");
-var mongoDatabaseName = builder.Configuration["Mongo:DatabaseName"] ?? throw new InvalidOperationException("Missing Mongo db database");
+builder.Services.Configure<AzureCosmosOptions>(builder.Configuration.GetSection(nameof(AzureCosmosOptions)));
+AzureCosmosOptions azureCosmosOptions = builder.Configuration.GetSection(nameof(AzureCosmosOptions)).Get<AzureCosmosOptions>()
+?? throw new InvalidOperationException("");
 
-builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient(mongoConn));
+var cosmosClient = new CosmosClient(azureCosmosOptions.ConnectionString);
 
-builder.Services.AddSingleton(sp =>
-    sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDatabaseName));
+builder.Services.AddSingleton(cosmosClient);
 
-// Configure the HTTP request pipeline.
-builder.Services.AddWorkflow(x => x.UseMongoDB(mongoConn, mongoDatabaseName));
+builder.Services.AddWorkflow(x =>
+{
+    x.UseCosmosDbPersistence(
+        client: cosmosClient,
+        databaseId: azureCosmosOptions.DatabaseName
+    );
+});
 
 builder.Services.AddTransient<IWorkflowService, WorkflowService>();
 builder.Services.AddTransient<IWorkflow<FiatOnRampRequested>, FiatOnRampWorkflow>();
@@ -39,6 +43,10 @@ builder.Services.AddTransient<IWorkflow<CryptoPayoutMessage>, CryptoPayoutWorkfl
 builder.Services.AddTransient<SendToBlockchainProviderStep>();
 
 // Add MassTransit with RabbitMQ
+if (builder.Environment.IsDevelopment())
+{
+
+}
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<LiqpayResponseReceivedEventHandler>();
@@ -47,21 +55,40 @@ builder.Services.AddMassTransit(x =>
 
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.UsingRabbitMq((context, cfg) =>
+    if (builder.Environment.IsDevelopment())
     {
-        cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
-        {
-            h.Username(builder.Configuration["RabbitMQ:Username"]);
-            h.Password(builder.Configuration["RabbitMQ:Password"]);
-        });
-
-        cfg.ReceiveEndpoint("liqpay-response-received", e =>
-            e.ConfigureConsumer<LiqpayResponseReceivedEventHandler>(context)
-        );
-
-        // Configure endpoints here if needed
-        cfg.ConfigureEndpoints(context);
+        x.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
+    {
+        h.Username(builder.Configuration["RabbitMQ:Username"]);
+        h.Password(builder.Configuration["RabbitMQ:Password"]);
     });
+
+    cfg.ReceiveEndpoint("liqpay-response-received", e =>
+        e.ConfigureConsumer<LiqpayResponseReceivedEventHandler>(context)
+    );
+
+    // Configure endpoints here if needed
+    cfg.ConfigureEndpoints(context);
+});
+    }
+    else
+    {
+        x.UsingAzureServiceBus((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+
+    cfg.ReceiveEndpoint("liqpay-response-received", e =>
+         e.ConfigureConsumer<LiqpayResponseReceivedEventHandler>(context)
+     );
+
+    cfg.ConfigureEndpoints(context);
+
+});
+    }
+
+
 });
 JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
 .Get<JwtOptions>() ?? throw new InvalidOperationException("JWT options not defined");

@@ -6,24 +6,17 @@ using LiqPayProviderService.Infrastructure.Repositories;
 using LiqPayProviderService.IntegrationEvents.Handlers;
 using LiqPayProviderService.Services;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<LiqPayOptions>(builder.Configuration.GetSection(nameof(LiqPayOptions)));
 builder.Services.Configure<WebhookOptions>(builder.Configuration.GetSection(nameof(WebhookOptions)));
-string? mongoConnectionString = builder.Configuration.GetConnectionString("MongoConnection" ?? throw new InvalidOperationException("mongoConnectionString missing"));
-string? mongoDatabaseName = builder.Configuration["MongoDatabaseName"] ?? throw new InvalidOperationException("MongoDatabaseName missing");
-builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectionString));
+builder.Services.Configure<AzureCosmosOptions>(builder.Configuration.GetSection(nameof(AzureCosmosOptions)));
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILiqpayService, LiqPayService>();
-builder.Services.AddDbContext<PaymentDbContext>((sp, options) =>
-{
-    var client = sp.GetRequiredService<IMongoClient>();
-    options.UseMongoDB(client, mongoDatabaseName);
-});
+builder.Services.AddDbContext<PaymentDbContext>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProcessDepositCommand>());
 
 
