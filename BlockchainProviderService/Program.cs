@@ -29,20 +29,41 @@ builder.Services.AddMassTransit(x =>
 
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.UsingRabbitMq((context, cfg) =>
+    if (builder.Environment.IsDevelopment())
     {
-        cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
-        {
-            h.Username(builder.Configuration["RabbitMQ:Username"]);
-            h.Password(builder.Configuration["RabbitMQ:Password"]);
-        });
-        cfg.ReceiveEndpoint("crypto-payout-requested", e =>
-        {
-            e.ConfigureConsumer<CryptoPayoutRequestedEventHandler>(context);
-        });
-        // Configure endpoints here if needed
-        cfg.ConfigureEndpoints(context);
+        x.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
+    {
+        h.Username(builder.Configuration["RabbitMQ:Username"]);
+        h.Password(builder.Configuration["RabbitMQ:Password"]);
     });
+    cfg.ReceiveEndpoint("crypto-payout-requested", e =>
+    {
+        e.ConfigureConsumer<CryptoPayoutRequestedEventHandler>(context);
+    });
+    // Configure endpoints here if needed
+    cfg.ConfigureEndpoints(context);
+});
+    }
+    else
+    {
+        x.UsingAzureServiceBus((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+
+            cfg.ReceiveEndpoint("deposit-requested", e =>
+            {
+                e.ConfigureConsumer<CryptoPayoutRequestedEventHandler>(context);
+            });
+
+            cfg.ConfigureEndpoints(context);
+
+        });
+    }
+
+
+
 });
 
 var app = builder.Build();

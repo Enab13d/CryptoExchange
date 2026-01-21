@@ -59,16 +59,35 @@ services.AddMassTransit(busRegistrationConfigurator =>
 {
     busRegistrationConfigurator.AddConsumer<PaymentDataPreparedEventHandler>();
     busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
-    busRegistrationConfigurator.UsingRabbitMq((context, cfg) =>
+    if (builder.Environment.IsDevelopment())
     {
-        cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
-         {
-             h.Username(builder.Configuration["RabbitMQ:Username"] ?? throw new ArgumentException(""));
-             h.Password(builder.Configuration["RabbitMQ:Password"] ?? throw new ArgumentException(""));
-         });
+        busRegistrationConfigurator.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(builder.Configuration["RabbitMQ:Host"], "/", h =>
+     {
+         h.Username(builder.Configuration["RabbitMQ:Username"] ?? throw new ArgumentException(""));
+         h.Password(builder.Configuration["RabbitMQ:Password"] ?? throw new ArgumentException(""));
+     });
 
-        cfg.ConfigureEndpoints(context);
-    });
+    cfg.ConfigureEndpoints(context);
+});
+    }
+
+    else
+    {
+        busRegistrationConfigurator.UsingAzureServiceBus((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+
+            cfg.ReceiveEndpoint("deposit-requested", e =>
+            {
+                e.ConfigureConsumer<PaymentDataPreparedEventHandler>(context);
+            });
+
+            cfg.ConfigureEndpoints(context);
+
+        });
+    }
 }
 );
 

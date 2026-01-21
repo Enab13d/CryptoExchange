@@ -112,7 +112,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "liqpayproviderservice",
+          "Host": "liqpay-provider-service",
           "Port": 80
         }
       ],
@@ -126,7 +126,7 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "signalrproviderservice",
+          "Host": "signalr-provider-service",
           "Port": 80
         }
       ],
