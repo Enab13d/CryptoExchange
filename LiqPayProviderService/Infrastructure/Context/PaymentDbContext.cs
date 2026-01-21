@@ -15,7 +15,7 @@ public class PaymentDbContext(DbContextOptions<PaymentDbContext> options, IOptio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Payment>().ToContainer("payments");
+        modelBuilder.Entity<Payment>().ToContainer("paymentsdb");
         modelBuilder.Entity<Payment>().HasNoDiscriminator().HasPartitionKey(p => p.PaymentId);
 
 

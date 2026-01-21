@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()
-        ; ;
+        ;
     });
 });
 JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
