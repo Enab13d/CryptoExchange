@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="configuration.json">
+    <None Update="configuration.Development.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-      <None Update="configuration.prod.json">
+      <None Update="configuration.Production.json">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </None>
   </ItemGroup>

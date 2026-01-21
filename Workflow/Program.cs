@@ -31,7 +31,8 @@ builder.Services.AddWorkflow(x =>
 {
     x.UseCosmosDbPersistence(
         client: cosmosClient,
-        databaseId: azureCosmosOptions.DatabaseName
+        databaseId: azureCosmosOptions.DatabaseName,
+        cosmosDbStorageOptions: new()
     );
 });
 

@@ -92,7 +92,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "workflow",
-          "Port": 5004
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/exchange",
@@ -113,7 +113,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "liqpayproviderservice",
-          "Port": 8080
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/payment/callback",
@@ -127,7 +127,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "signalrproviderservice",
-          "Port": 5007
+          "Port": 80
         }
       ],
       "AuthenticationOptions": {
