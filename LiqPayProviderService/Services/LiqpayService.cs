@@ -16,6 +16,8 @@ public class LiqPayService : ILiqpayService
     private readonly string _privateKey;
     private readonly int _apiVersion;
     private readonly string _webhookURL;
+
+    private readonly string _resultUrl;
     private readonly JsonSerializerSettings _jsonSettings;
     private readonly ILogger<LiqPayService> _logger;
     public bool IsCnbSandbox
@@ -26,6 +28,7 @@ public class LiqPayService : ILiqpayService
         _publicKey = liqpayOptions.Value.PublicKey;
         _privateKey = liqpayOptions.Value.PrivateKey;
         _apiVersion = liqpayOptions.Value.LiqPayAPIVersion;
+        _resultUrl = liqpayOptions.Value.ResultURL;
         _webhookURL = webhookOptions.Value.URL;
         _jsonSettings = new JsonSerializerSettings
         {
@@ -41,6 +44,7 @@ public class LiqPayService : ILiqpayService
     {
         requestParams.PublicKey = _publicKey;
         requestParams.Version = _apiVersion;
+        requestParams.ResultURL = _resultUrl;
         return requestParams;
     }
     public T AttachSandboxParam<T>(T requestParams) where T : ILiqpayBasicApiParams

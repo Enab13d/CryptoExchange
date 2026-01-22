@@ -10,6 +10,9 @@ public class ILiqpayBasicApiParams
     [JsonProperty("public_key")]
     public string PublicKey { get; set; } = string.Empty;
 
+    [JsonProperty("result_url")]
+    public string ResultURL { get; set; } = string.Empty;
+
 
     [JsonProperty("sandbox")]
     public string Sandbox { get; set; } = string.Empty;

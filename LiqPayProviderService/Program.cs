@@ -69,11 +69,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
-    options.InstanceName = "exchange:";
-});
+// builder.Services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = builder.Configuration["Redis:ConnectionString"];
+//     options.InstanceName = "exchange:";
+// });
 
 
 var app = builder.Build();

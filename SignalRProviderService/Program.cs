@@ -6,14 +6,13 @@ using SignalRProviderService.Api.Commands.Handlers;
 using SignalRProviderService.Api.Hubs;
 using SignalRProviderService.Infrastructure.Configuration;
 using SignalRProviderService.Infrastructure.Policies;
-using SignalRProviderService.Infrastructure.Repositories;
+
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
 
 services.AddOpenApi();
-services.AddScoped<IPaymentDataRepository, PaymentDataRepository>();
 JwtOptions jwtOptions = builder.Configuration.GetRequiredSection(nameof(JwtOptions))
 .Get<JwtOptions>() ?? throw new InvalidOperationException("JWT options not defined");
 
@@ -92,11 +91,11 @@ services.AddMassTransit(busRegistrationConfigurator =>
 );
 
 
-services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
-    options.InstanceName = "exchange:";
-});
+// services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = builder.Configuration["Redis:ConnectionString"];
+//     options.InstanceName = "exchange:";
+// });
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

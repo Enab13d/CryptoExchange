@@ -7,4 +7,6 @@ public class LiqPayOptions
     public string PrivateKey { get; set; } = string.Empty;
 
     public int LiqPayAPIVersion { get; set; }
+    
+    public string ResultURL { get; set; } = string.Empty;
 }

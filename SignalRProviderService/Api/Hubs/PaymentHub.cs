@@ -3,16 +3,14 @@ using Microsoft.AspNetCore.SignalR;
 using SignalRProviderService.Api.Extensions;
 using SignalRProviderService.Api.Interfaces;
 using SignalRProviderService.Infrastructure.Policies;
-using SignalRProviderService.Infrastructure.Repositories;
 
 namespace SignalRProviderService.Api.Hubs;
 
 [Authorize(Policy = SignalRProviderAuthorizationPolicy.UserPolicy)]
-public class PaymentHub(ILogger<PaymentHub> logger, IPaymentDataRepository paymentDataRepository) : Hub<IPaymentClient>
+public class PaymentHub(ILogger<PaymentHub> logger) : Hub<IPaymentClient>
 {
 
     private readonly ILogger<PaymentHub> _logger = logger;
-    private readonly IPaymentDataRepository _paymentDataRepository = paymentDataRepository;
     public async Task JoinHubGroup(string paymentId)
     {
 
@@ -24,20 +22,20 @@ public class PaymentHub(ILogger<PaymentHub> logger, IPaymentDataRepository payme
 
 
     }
-    public async Task SendPaymentData(string paymentId)
-    {
-        _logger.LogInformation("Send Payment data command procedure invoked by client with paymentID {paymentId}", paymentId);
+    // public async Task SendPaymentData(string paymentId)
+    // {
+    //     _logger.LogInformation("Send Payment data command procedure invoked by client with paymentID {paymentId}", paymentId);
 
 
-        var paymentData = await _paymentDataRepository.GetAsync(paymentId) ?? throw new InvalidOperationException($"Payment data with cacheKey {paymentId} not found");
-        //then extract payment data and 
-        await Clients.Group(paymentId)
-        .ReceivePaymentFormData(paymentData);
-        _logger.LogInformation("Sent payment data to client group with paymentId {id}", paymentId);
-        await _paymentDataRepository.RemoveAsync(paymentId);
+    //     var paymentData = await _paymentDataRepository.GetAsync(paymentId) ?? throw new InvalidOperationException($"Payment data with cacheKey {paymentId} not found");
+    //     //then extract payment data and 
+    //     await Clients.Group(paymentId)
+    //     .ReceivePaymentFormData(paymentData);
+    //     _logger.LogInformation("Sent payment data to client group with paymentId {id}", paymentId);
+    //     await _paymentDataRepository.RemoveAsync(paymentId);
 
 
-    }
+    // }
 
     public override Task OnConnectedAsync()
     {

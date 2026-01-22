@@ -52,7 +52,7 @@ builder.Services.AddMassTransit(x =>
         {
             cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
 
-            cfg.ReceiveEndpoint("deposit-requested", e =>
+            cfg.ReceiveEndpoint("crypto-payout-requested", e =>
             {
                 e.ConfigureConsumer<CryptoPayoutRequestedEventHandler>(context);
             });
